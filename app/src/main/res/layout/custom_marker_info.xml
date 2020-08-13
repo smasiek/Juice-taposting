@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/stationIconMarkerView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:contentDescription="@string/station_icon"
+        android:src="@drawable/gas_station"/>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/stationNameTextMarkerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nazwa stacji w przyszłości pobrana z bazy"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:id="@+id/stationPetrolPriceTextMarkerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cena benzyny: (zrob pobranie z bazy)"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/stationNameTextMarkerView"/>
+
+        <TextView
+            android:id="@+id/stationPetrolPriceMarkerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/stationNameTextMarkerView"
+            android:text="0.00" />
+        <TextView
+            android:id="@+id/stationStreetMarkerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/stationPetrolPriceTextMarkerView"
+            android:text="Nr lokalu + Ulica" />
+
+        <TextView
+            android:id="@+id/stationCityMarkerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/stationStreetMarkerView"
+            android:text="Miasto" />
+        <TextView
+            android:id="@+id/stationCountryMarkerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/stationCityMarkerView"
+            android:text="Kraj" />
+        <Button
+            android:id="@+id/saveStationMarkerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:text="@string/zapisz_stacje"
+
+            />
+    </RelativeLayout>
+
+
+</LinearLayout>

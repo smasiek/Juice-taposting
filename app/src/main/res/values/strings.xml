@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Ceny paliw</string>
+    <string name="title_activity_maps">Menu</string>
+    <string name="twoje_stacje">Twoje stacje</string>
+    <string name="dodaj_nowa_stacje">Dodaj nową stację</string>
+    <string name="select_city">Select city</string>
+    <string name="select_name">Select station name</string>
+    <string name="add_station">Add station</string>
+    <string name="station_icon">station icon</string>
+    <string name="name">Nazwa</string>
+    <string name="blankText"></string>
+    <string name="zapisz_stacje">Zapisz stacje</string>
+
+    <string-array name="cities">
+        <item>Jasło</item>
+        <item>Kraków</item>
+        <item>Warszawa</item>
+    </string-array>
+
+    <string-array name="names">
+        <item>Bliska</item>
+        <item>Grosar</item>
+        <item>Orlen</item>
+    </string-array>
+    <!--<string name="title_activity_station_list">Twoje stacje</string>
+    <Strings used for fragments for navigation -->
+
+</resources>
