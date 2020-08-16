@@ -29,7 +29,7 @@
             android:id="@+id/stationPetrolPriceTextMarkerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cena benzyny: (zrob pobranie z bazy)"
+            android:text="Cena benzyny: "
             android:textColor="#2B2B2B"
             android:textStyle="bold"
             android:layout_alignParentStart="true"
@@ -43,6 +43,7 @@
             android:textStyle="bold"
             android:layout_alignParentEnd="true"
             android:layout_below="@+id/stationNameTextMarkerView"
+            android:layout_toRightOf="@+id/stationPetrolPriceTextMarkerView"
             android:text="0.00" />
         <TextView
             android:id="@+id/stationStreetMarkerView"
@@ -63,15 +64,6 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/stationStreetMarkerView"
             android:text="Miasto" />
-        <TextView
-            android:id="@+id/stationCountryMarkerView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#2B2B2B"
-            android:textStyle="bold"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/stationCityMarkerView"
-            android:text="Kraj" />
         <Button
             android:id="@+id/saveStationMarkerButton"
             android:layout_width="wrap_content"

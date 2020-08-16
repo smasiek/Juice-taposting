@@ -44,6 +44,7 @@ import com.google.android.gms.tasks.Task;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -101,6 +102,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         currentLocation=getLastKnownLocation();
         LatLng currLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         MarkerOptions currLocationMarker = new MarkerOptions();
+        //Set curr location to Jasło as emulator doesn't receive current location info
+        currLocation=new LatLng(49.74506, 21.47252);
         currLocationMarker.position(currLocation);
         currLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.your_marker));
         currLocationMarker.title("Your current location");
@@ -108,13 +111,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //mMap.addMarker(new MarkerOptions().position(currLocation).title("This is your current location"));
         // mMap.addMarker(new MarkerOptions().position(currLocation).icon(BitmapDescriptorFactory.fromResource(R.drawable.you_marker)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currLocation));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currLocation, 15), 5000, null);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currLocation, 13), 5000, null);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        String address = "Jasło Grosar";
-        getAddress(address,getApplicationContext(),new GeoHandler());
 
+        DatabaseAccess stationsDatabase=DatabaseAccess.getInstance(getApplicationContext());
 
+        List<GasStation>stationList=stationsDatabase.getStationList();
+        for (GasStation gasStation : stationList) {
+            StringBuilder address=new StringBuilder();
+            address.append(gasStation.getCity()).append(" ");
+            address.append(gasStation.getStreet());
+            if(gasStation.getCity().equals("JASŁO")){
+                getAddress(address.toString(),getApplicationContext(),new GeoHandler());
+            }
+        }
+       //
+        // forma debuggingu:
+        stationsDatabase.close();
         if (mMap != null) {
 
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -135,15 +149,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     TextView t2_stationPetrolPrice = (TextView) row.findViewById(R.id.stationPetrolPriceMarkerValue);
                     TextView t3_stationStreet = (TextView) row.findViewById(R.id.stationStreetMarkerView);
                     TextView t4_stationCity = (TextView) row.findViewById(R.id.stationCityMarkerView);
-                    TextView t5_stationCountry = (TextView) row.findViewById(R.id.stationCountryMarkerView);
 
                     LatLng ll = marker.getPosition();
                     //Get location position marker and then update infoWindow
+                    //TODO: geocoderem przerobić LatLng na adres i po adresie znaleźć nazwe w bazie danych
                     t1_stationName.setText("Tymczasowa nazwa");//Stworzyć pobieranie nazwy z bazy
                     t2_stationPetrolPrice.setText("9.99"); // do pobrania w jakiś sposób z bazy!
                     t3_stationStreet.setText(getStreetFromLatLng(ll.latitude, ll.longitude));
                     t4_stationCity.setText(getCityFromLatLng(ll.latitude, ll.longitude));
-                    t5_stationCountry.setText(getCountryFromLatLng(ll.latitude, ll.longitude));
+                   // t5_stationCountry.setText(getCountryFromLatLng(ll.latitude, ll.longitude));
                     //each method uses geoCoder to get actual name of street etc.
                     return row;
                 }

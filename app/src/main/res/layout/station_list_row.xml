@@ -33,7 +33,7 @@
             android:id="@+id/stationPetrolPriceTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cena benzyny: (zrob pobranie z bazy)"
+            android:text="Cena benzyny: "
             android:textColor="#2B2B2B"
             android:textStyle="bold"
             android:layout_alignParentStart="true"
@@ -47,31 +47,55 @@
             android:textStyle="bold"
             android:layout_alignParentEnd="true"
             android:layout_below="@+id/stationNameTextView"
+            android:layout_toRightOf="@+id/stationPetrolPriceTextView"
             android:text="0.00" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/stationStreeView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
+            android:textColor="#2B2B2B"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/stationPetrolPriceValue"
+            android:text="Nr lokalu + Ulica" />
+
+        <TextView
+            android:id="@+id/stationCityView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/stationStreeView"
+            android:text="Miasto" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/stationNameTextView">
             <Button
                 android:id="@+id/removeYourStationButton"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:textSize="13sp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="0dp"
                 android:text="Remove station" />
+
             <Button
                 android:id="@+id/updateStationPriceButton"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:textSize="13sp"
+                android:layout_below="@id/removeYourStationButton"
+                android:layout_alignStart="@id/removeYourStationButton"
                 android:layout_alignParentEnd="true"
-                android:text="Update  price"
-                />
-        </LinearLayout>
+                android:layout_alignParentBottom="true"
+                android:text="Update  price" />
+
+
+        </RelativeLayout>
 
 
     </RelativeLayout>

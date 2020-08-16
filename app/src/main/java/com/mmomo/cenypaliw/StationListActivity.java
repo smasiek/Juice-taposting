@@ -20,6 +20,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+
 import static com.mmomo.cenypaliw.GasStationNames.*;
 import static com.mmomo.cenypaliw.GasStationIcons.*;
 
@@ -61,6 +63,15 @@ public class StationListActivity extends AppCompatActivity {
                 }
             }
         });
+
+        YourStationDatabase yourStationDatabase = new YourStationDatabase(this);
+        //TODO: ZOBACZYC GDZIE SĄ PRZECHOWYWANE BAZY DANYCH I CZEMU SIENIE TWORZY UZYWAJĄC onCreate
+        List<YourGasStation> stations = new YourStationDatabase(this).getYourStationList();
+        YourStationListAdapter yourStationListAdapter = new YourStationListAdapter(this,stations);
+
+        ListView listView = (ListView) findViewById(R.id.stationListView);
+        listView.setAdapter(yourStationListAdapter);
+
     }
 
 
@@ -86,16 +97,22 @@ public class StationListActivity extends AppCompatActivity {
             ImageView images=row.findViewById(R.id.stationIconView);
             TextView stationName=row.findViewById(R.id.stationNameTextView);
             TextView stationPrice=row.findViewById(R.id.stationPetrolPriceValue);
-            if(this.stationName[position].equals("Orlen")){
-                stationImage[position]=gasStationIcons[GasStationNames.getPosition(ORLEN)];
-            }else if(this.stationName[position].equals("Lotos")){
-                stationImage[position]=gasStationIcons[GasStationNames.getPosition(LOTOS)];
-            }else if(this.stationName[position].equals("Grosar")){
-                stationImage[position]=gasStationIcons[GasStationNames.getPosition(GROSAR)];
-            }else if(this.stationName[position].equals("BP")){
-                stationImage[position]=gasStationIcons[GasStationNames.getPosition(BP)];
-            }else {
-                stationImage[position] = gasStationIcons[GasStationNames.getPosition(NONE)];
+            switch (this.stationName[position]) {
+                case "Orlen":
+                    stationImage[position] = gasStationIcons[GasStationNames.getPosition(ORLEN)];
+                    break;
+                case "Lotos":
+                    stationImage[position] = gasStationIcons[GasStationNames.getPosition(LOTOS)];
+                    break;
+                case "Grosar":
+                    stationImage[position] = gasStationIcons[GasStationNames.getPosition(GROSAR)];
+                    break;
+                case "BP":
+                    stationImage[position] = gasStationIcons[GasStationNames.getPosition(BP)];
+                    break;
+                default:
+                    stationImage[position] = gasStationIcons[GasStationNames.getPosition(NONE)];
+                    break;
             }
             images.setImageResource(stationImage[position]);
             stationName.setText(this.stationName[position]);
