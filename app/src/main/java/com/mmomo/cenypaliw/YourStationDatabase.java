@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +56,10 @@ public class YourStationDatabase extends StationDatabase {
     }
 
 
-    public void addYourStation(YourGasStation gasStation){
+    public void addYourStation(YourGasStation gasStation,Context context){
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues values=new ContentValues();
+        values.put(KEY_YOUR_ID, (String) null);
         values.put(KEY_ID,gasStation.getID());
         values.put(KEY_NAME,gasStation.getName());
         values.put(KEY_STREET,gasStation.getStreet());
@@ -71,6 +73,7 @@ public class YourStationDatabase extends StationDatabase {
         values.put(KEY_CNG,gasStation.getCNG());
 
         db.insert(TABLE_NAME,null,values);
+        Toast.makeText(context, "Station added to your list!", Toast.LENGTH_SHORT).show();
         db.close();
     }
 
@@ -113,11 +116,13 @@ public class YourStationDatabase extends StationDatabase {
                         Integer.parseInt(cursor.getString(1)),
                         cursor.getString(2),cursor.getString(3),cursor.getString(4),
                         cursor.getString(5),cursor.getString(6),cursor.getString(7),
-                        Integer.parseInt(cursor.getString(8)),
-                        Integer.parseInt(cursor.getString(9)),
-                        Integer.parseInt(cursor.getString(10)),
-                        Integer.parseInt(cursor.getString(11)),
-                        Integer.parseInt(cursor.getString(12)));
+                        Double.parseDouble(cursor.getString(8)),
+                        Double.parseDouble(cursor.getString(9)),
+                        Double.parseDouble(cursor.getString(10)),
+                        Double.parseDouble(cursor.getString(11)),
+                        Double.parseDouble(cursor.getString(12)));
+                    result.add(gasStation);
+
             }while(cursor.moveToNext());
         }
         db.close();

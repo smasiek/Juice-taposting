@@ -52,9 +52,13 @@ public class AddYourStation extends AppCompatActivity {
 
                 Other way to do this is to connect names and street of station in one text view
                  */
-                YourGasStation yourGasStation = new YourGasStation(cityText.getText().toString(),nameText.getText().toString());
+                try {
+                    YourGasStation yourGasStation = new YourGasStation(cityText.getText().toString(), nameText.getText().toString(), getApplicationContext());
 
-                db.addYourStation(yourGasStation);
+                    db.addYourStation(yourGasStation,getApplicationContext());
+                } catch (RuntimeException e){
+                    Toast.makeText(AddYourStation.this, "There's no such station in database bla bla bla", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

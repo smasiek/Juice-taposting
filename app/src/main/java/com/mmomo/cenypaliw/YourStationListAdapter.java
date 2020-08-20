@@ -30,8 +30,8 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
 
         TextView stationName=(TextView) convertView.findViewById(R.id.stationNameTextView);
         TextView stationPrice=(TextView) convertView.findViewById(R.id.stationPetrolPriceValue);
-        TextView stationStreet=(TextView) convertView.findViewById(R.id.stationStreeView);
-        TextView stationCity=(TextView) convertView.findViewById(R.id.stationCityView);
+        TextView stationStreet=(TextView) convertView.findViewById(R.id.stationStreeTextView);
+        TextView stationCity=(TextView) convertView.findViewById(R.id.stationCityTextView);
 
         if(station.getName()!=null){
             stationName.setText(station.getName());

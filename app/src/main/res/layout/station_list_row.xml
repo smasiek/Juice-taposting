@@ -19,15 +19,17 @@
         android:layout_toEndOf="@id/stationIconView"
         android:layout_width="match_parent"
         android:layout_height="100dp">
+
         <TextView
             android:id="@+id/stationNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:maxLines="2"
             android:text="Nazwa stacji w przyszłości pobrana z bazy"
             android:textColor="#000"
-            android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_alignParentStart="true"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/stationPetrolPriceTextView"
@@ -47,11 +49,11 @@
             android:textStyle="bold"
             android:layout_alignParentEnd="true"
             android:layout_below="@+id/stationNameTextView"
-            android:layout_toRightOf="@+id/stationPetrolPriceTextView"
+            android:layout_toEndOf="@+id/stationPetrolPriceTextView"
             android:text="0.00" />
 
         <TextView
-            android:id="@+id/stationStreeView"
+            android:id="@+id/stationStreeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#2B2B2B"
@@ -61,41 +63,35 @@
             android:text="Nr lokalu + Ulica" />
 
         <TextView
-            android:id="@+id/stationCityView"
+            android:id="@+id/stationCityTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#2B2B2B"
             android:textStyle="bold"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/stationStreeView"
+            android:layout_below="@+id/stationStreeTextView"
             android:text="Miasto" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/stationNameTextView">
-            <Button
-                android:id="@+id/removeYourStationButton"
+            android:orientation="horizontal"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true">
+
+            <ImageButton
+                android:id="@+id/imageButton4"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:textSize="13sp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="0dp"
-                android:text="Remove station" />
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/delete_your_station" />
 
-            <Button
-                android:id="@+id/updateStationPriceButton"
+            <ImageButton
+                android:id="@+id/imageButton3"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:textSize="13sp"
-                android:layout_below="@id/removeYourStationButton"
-                android:layout_alignStart="@id/removeYourStationButton"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:text="Update  price" />
+                android:layout_height="wrap_content"
+                android:baselineAlignBottom="true"
+                app:srcCompat="@drawable/update_price" />
 
-
-        </RelativeLayout>
+        </LinearLayout>
 
 
     </RelativeLayout>
