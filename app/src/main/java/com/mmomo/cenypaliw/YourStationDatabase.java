@@ -4,33 +4,46 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class YourStationDatabase extends StationDatabase {
 
-    private static final String TABLE_NAME = "YourStations";
+public class YourStationDatabase extends SQLiteOpenHelper {
 
+    protected static final int DATABASE_VERSION=1;
+    protected static final String  DATABASE_NAME="GasStationDatabase";
+    private static final String TABLE_NAME="YourStations";
     protected static final String KEY_YOUR_ID = "ID_your_station";
+    protected static final String KEY_ID="ID_station";
+    protected static final String KEY_NAME="Name";
+    protected static final String KEY_STREET="Street";
+    protected static final String KEY_CITY="City";
+    protected static final String KEY_POSTAL_CODE="Postal_code";
+    protected static final String KEY_PROVINCE="Province";
+    protected static final String KEY_COUNTY="County";
+    protected static final String KEY_RON95="RON95";
+    protected static final String KEY_RON98="RON98";
+    protected static final String KEY_ON="[ON]";
+    protected static final String KEY_LPG="LPG";
+    protected static final String KEY_CNG="CNG";
 
     public YourStationDatabase(Context context) {
-        super(context);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        /*String CREATE_STATIONS_TABLE = String.format("CREATE TABLE %s (%s INTEGER PRIMARY " +
-                        "KEY AUTOINCREMENT UNIQUE NOT NULL, %s INTEGER UNIQUE NOT NULL," +
-                        "REFERENCES Stations (%s) ON DELETE CASCADE ON UPDATE CASCADE," +
-                        " %s VARCHAR (250) NOT NULL, %s VARCHAR (250), %s VARCHAR (250) NOT NULL," +
-                        " %s VARCHAR (250), %s VARCHAR (250), %s VARCHAR (250), %s DOUBLE (10, 2)," +
-                        " %s DOUBLE (10, 2), %s DOUBLE (10, 2), %s DOUBLE (10, 2), %s DOUBLE (10, 2))",
-                TABLE_NAME, KEY_YOUR_ID, KEY_ID,KEY_ID, KEY_NAME, KEY_STREET, KEY_CITY, KEY_POSTAL_CODE,
+        /*String CREATE_STATIONS_TABLE= String.format("CREATE TABLE %s (%s INTEGER PRIMARY " +
+                "KEY AUTOINCREMENT UNIQUE NOT NULL, %s VARCHAR (250) NOT NULL," +
+                " %s VARCHAR (250), %s VARCHAR (250) NOT NULL, %s VARCHAR (250)," +
+                " %s VARCHAR (250), %s VARCHAR (250), %s DOUBLE (10, 2), %s DOUBLE (10, 2)," +
+                " %s DOUBLE (10, 2), %s DOUBLE (10, 2), %s DOUBLE (10, 2))",
+                TABLE_NAME, KEY_ID, KEY_NAME, KEY_STREET, KEY_CITY, KEY_POSTAL_CODE,
                 KEY_PROVINCE, KEY_COUNTY, KEY_RON95, KEY_RON98, KEY_ON, KEY_LPG, KEY_CNG);
-
-        */
+        db.execSQL(CREATE_STATIONS_TABLE);*/
         String CREATE_STATIONS_TABLE= "CREATE TABLE YourStations (" +
                 "    ID_your_station INTEGER        PRIMARY KEY AUTOINCREMENT" +
                 "                                   UNIQUE" +
@@ -52,12 +65,20 @@ public class YourStationDatabase extends StationDatabase {
                 "    CNG             DOUBLE (10, 2) " +
                 ");";
         db.execSQL(CREATE_STATIONS_TABLE);
-
     }
 
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        //Delete old version
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        //Create new one
+        onCreate(db);
+    }
 
     public void addYourStation(YourGasStation gasStation,Context context){
+        //Open connection with database
         SQLiteDatabase db=this.getWritableDatabase();
+        //Prepare tuple with values
         ContentValues values=new ContentValues();
         values.put(KEY_YOUR_ID, (String) null);
         values.put(KEY_ID,gasStation.getID());
@@ -121,10 +142,11 @@ public class YourStationDatabase extends StationDatabase {
                         Double.parseDouble(cursor.getString(10)),
                         Double.parseDouble(cursor.getString(11)),
                         Double.parseDouble(cursor.getString(12)));
-                    result.add(gasStation);
+                result.add(gasStation);
 
             }while(cursor.moveToNext());
         }
+        cursor.close();
         db.close();
         return result;
     }

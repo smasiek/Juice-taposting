@@ -1,6 +1,7 @@
 package com.mmomo.cenypaliw;
 
 public class GasStation {
+    //Representation of single Gas Station, used to generate Map with markers
     private int ID;
     private String name;
     private String street;

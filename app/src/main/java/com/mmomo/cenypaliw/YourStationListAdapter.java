@@ -18,6 +18,7 @@ import static com.mmomo.cenypaliw.GasStationIcons.gasStationIcons;
 import static com.mmomo.cenypaliw.GasStationNames.*;
 
 public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
+    //Adapter creating rows in Your Station List
     public YourStationListAdapter(Context context, List<YourGasStation> stations){
         super(context,0,stations);
     }
@@ -31,7 +32,7 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
         if(convertView==null){
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.station_list_row,parent,false);
         }
-
+        //Get access to TextViews to modify them
         TextView stationName=(TextView) convertView.findViewById(R.id.stationNameTextView);
         TextView stationPrice=(TextView) convertView.findViewById(R.id.stationPetrolPriceValue);
         TextView stationStreet=(TextView) convertView.findViewById(R.id.stationStreeTextView);
