@@ -17,6 +17,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -100,10 +101,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLastLocation();
         currentLocation=getLastKnownLocation();
-        LatLng currLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+
+//        LatLng currLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         MarkerOptions currLocationMarker = new MarkerOptions();
         //Set curr location to Jasło as emulator doesn't receive current location info
-        currLocation=new LatLng(49.74506, 21.47252);
+        LatLng currLocation=new LatLng(49.74506, 21.47252);
+        //Set marker at current location
         currLocationMarker.position(currLocation);
         currLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.your_marker));
         currLocationMarker.title("Your current location");
@@ -119,11 +122,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         List<GasStation>stationList=stationsDatabase.getStationList();
         for (GasStation gasStation : stationList) {
-            StringBuilder address=new StringBuilder();
-            address.append(gasStation.getCity()).append(" ");
-            address.append(gasStation.getStreet());
-            if(gasStation.getCity().equals("JASŁO")){
-                getAddress(address.toString(),getApplicationContext(),new GeoHandler());
+            /* Build String to look for specific station using Geocoder
+            *
+            * if station is found - place marker
+            * */
+            //Street,City,ID,Name,
+            StringBuilder completeAddress=new StringBuilder();
+            completeAddress.append(gasStation.getCity()).append(" ");
+            completeAddress.append(gasStation.getStreet()).append(";");
+            completeAddress.append(gasStation.getID()).append(";"); // sometimes station name includes ","
+            completeAddress.append(gasStation.getName());
+
+
+            /* TEMPORARILY COMMENTED CUS I WANT TO MAKE A DATABASE WITHOUT MARKERS*/
+
+            final int MIN_FOUND_STATIONS_NUMBER=30;
+            final int MAX_FOUND_STATIONS_NUMBER=70;
+
+            if(MIN_FOUND_STATIONS_NUMBER<=gasStation.getID() && gasStation.getID()<=MAX_FOUND_STATIONS_NUMBER){
+                //Tighten search scope to one city  to save CPU resources
+                getAddress(completeAddress.toString(),getApplicationContext(),new GeoHandler());
             }
         }
        //
@@ -150,10 +168,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     TextView t3_stationStreet = (TextView) row.findViewById(R.id.stationStreetMarkerView);
                     TextView t4_stationCity = (TextView) row.findViewById(R.id.stationCityMarkerView);
 
+                    /*1. marker.getSnippet
+
+                    2. split(,)
+                    3. use in info window
+                    *
+                    */
+
                     LatLng ll = marker.getPosition();
                     //Get location position marker and then update infoWindow
                     //TODO: geocoderem przerobić LatLng na adres i po adresie znaleźć nazwe w bazie danych
-                    t1_stationName.setText("Tymczasowa nazwa");//Stworzyć pobieranie nazwy z bazy
+                    t1_stationName.setText(marker.getSnippet());//Stworzyć pobieranie nazwy z bazy
                     t2_stationPetrolPrice.setText("9.99"); // do pobrania w jakiś sposób z bazy!
                     t3_stationStreet.setText(getStreetFromLatLng(ll.latitude, ll.longitude));
                     t4_stationCity.setText(getCityFromLatLng(ll.latitude, ll.longitude));
@@ -306,14 +331,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Thread thread = new Thread(){
             public void run(){
                 Geocoder geocoder = new Geocoder(context,Locale.getDefault());
-                double[] result = new double[2];
+                //Store latitude and longitude in array
+                String[] result = new String[4];
                 try{
-                    List addressList=geocoder.getFromLocationName(locationAddress,1);
-                    if (addressList!=null && addressList.size()>0){
-                        Address address = (Address) addressList.get(0);
-                        result[0]=address.getLatitude();
-                        result[1]=address.getLongitude();
+                    String [] completeAddressArray=locationAddress.split(";");
+                    /*TODO: check if u use full company name, geocoder is able to return shortened name
 
+                   eg. FHU WOJTEK SZUDY ORLEN address.getXXX returns simple ORLEN
+                    *
+                    */
+                    List<Address> addressList=geocoder.getFromLocationName(completeAddressArray[0],1);
+                    if (addressList!=null && addressList.size()>0){
+                        Address address = addressList.get(0);
+                        result[0]=completeAddressArray[1]; //ID
+                        result[1]=completeAddressArray[2]; //Station full name
+                        result[2]=String.valueOf( address.getLatitude());
+                        result[3]=String.valueOf(address.getLongitude());
                     }
                 } catch (IOException e){
                     e.printStackTrace();
@@ -324,7 +357,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if(result!=null){
                         message.what=1;
                         Bundle bundle=new Bundle();
-                        bundle.putString("adress", result[0] +" "+result[1]);
+                        bundle.putString("adress", result[0] +";"+result[1]+";"+result[2]+";"+result[3]);
                         //Prepare data to send
                         message.setData(bundle);
                     }
@@ -353,15 +386,50 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             if(address!=null) {
                 //This should be deleted in future. Created just to have some marker onCreate
-                String[] latLang = address.split(" ", 2);
 
-                LatLng locationLatLang = new LatLng(Double.parseDouble(latLang[0]), Double.parseDouble(latLang[1]));
-                MarkerOptions locationMarker = new MarkerOptions();
-                locationMarker.position(locationLatLang);
-                //currLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.your_marker));
-                mMap.addMarker(locationMarker);
+                //?????? why delete this, i dunno
+                String[] stationLatLang = address.split(";");
+
+                LatLng locationLatLang = new LatLng(Double.parseDouble(stationLatLang[2]), Double.parseDouble(stationLatLang[3]));
+
+
+
+               // MarkerOptions locationMarker = new MarkerOptions();
+                //locationMarker.position(locationLatLang);
+
+
+
+                DatabaseAccess stationsDatabase=DatabaseAccess.getInstance(getApplicationContext());
+                //if(stationLatLang[1].contains("IWOPOL"))
+                stationsDatabase.insertStationCoords(Integer.parseInt(stationLatLang[0]),stationLatLang[1],Double.parseDouble(stationLatLang[2]),Double.parseDouble(stationLatLang[3]));
+
+
+
+                //locationMarker.snippet(stationLatLang[1]);
+               // mMap.addMarker(locationMarker);
 
             }
         }
     }
+
+    public void startAsyncTask(View v) {
+    // method used to get lat/lng from database
+
+    }
+
+    private class latLangAsyncTask extends AsyncTask<DatabaseAccess, Integer, Integer> {
+
+        @Override
+        protected Integer doInBackground(DatabaseAccess... params) {
+
+            Integer result=0;
+
+
+
+            return result;
+        }
+    }
+
+
+
 }

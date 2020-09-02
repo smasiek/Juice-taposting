@@ -1,9 +1,11 @@
 package com.mmomo.cenypaliw;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ public class DatabaseAccess {
     private static DatabaseAccess instance;
     public static final String GAS_STATIONS_TABLE = "Stations";
     public static final String YOUR_GAS_STATIONS_TABLE = "YourStations";
+    public static final String GAS_STATIONS_COORD_TABLE = "Coordinates";
 
     //Private constructor to avoid usig it from outside the class
     private DatabaseAccess(Context context) {
@@ -164,5 +167,24 @@ public class DatabaseAccess {
         }
         close();
         return result;
+    }
+    public void insertStationCoords(int id, String name,double lat, double lng){
+        //openConnection();
+
+        this.db = openHelper.getReadableDatabase();
+
+        ContentValues values=new ContentValues();
+
+        //final String temp_name="Name";
+        //final String temp_lat="Latitude";
+        //final String temp_lng="Longitude";
+        values.put("ID_station",id);
+        values.put("Name",name);
+        values.put("Latitude",lat);
+        values.put("Longitude",lng);
+        Log.d("Attempt",values.getAsString("Name") + " " + lat + " " + lng);
+        db.insert(GAS_STATIONS_COORD_TABLE,null,values);
+        //db.execSQL("INSERT INTO Coordinates (ID_station,Name, Latitude, Longitude) VALUES ("+id+", '"+name+"', "+lat+", "+lng+");");
+        closeConnection();
     }
 }
