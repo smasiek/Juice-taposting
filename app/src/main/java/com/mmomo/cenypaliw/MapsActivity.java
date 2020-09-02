@@ -1,12 +1,10 @@
 package com.mmomo.cenypaliw;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -38,14 +36,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
-import java.util.ArrayList;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Locale;
 
@@ -121,32 +116,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         DatabaseAccess stationsDatabase=DatabaseAccess.getInstance(getApplicationContext());
 
         List<GasStation>stationList=stationsDatabase.getStationList();
-        for (GasStation gasStation : stationList) {
-            /* Build String to look for specific station using Geocoder
-            *
-            * if station is found - place marker
-            * */
-            //Street,City,ID,Name,
-            StringBuilder completeAddress=new StringBuilder();
-            completeAddress.append(gasStation.getCity()).append(" ");
-            completeAddress.append(gasStation.getStreet()).append(";");
-            completeAddress.append(gasStation.getID()).append(";"); // sometimes station name includes ","
-            completeAddress.append(gasStation.getName());
 
+        startAsyncTask(stationList);
 
-            /* TEMPORARILY COMMENTED CUS I WANT TO MAKE A DATABASE WITHOUT MARKERS*/
-
-            final int MIN_FOUND_STATIONS_NUMBER=30;
-            final int MAX_FOUND_STATIONS_NUMBER=70;
-
-            if(MIN_FOUND_STATIONS_NUMBER<=gasStation.getID() && gasStation.getID()<=MAX_FOUND_STATIONS_NUMBER){
-                //Tighten search scope to one city  to save CPU resources
-                getAddress(completeAddress.toString(),getApplicationContext(),new GeoHandler());
-            }
-        }
        //
         // forma debuggingu:
-        stationsDatabase.close();
+        stationsDatabase.closeConnection();
         if (mMap != null) {
 
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -370,8 +345,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private class GeoHandler extends Handler {
+    private static class GeoHandler extends Handler {
         //Handles data from getAddress() method
+
+        Context context;
+        public GeoHandler(Context context){
+            this.context=context;
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             String address;
@@ -399,7 +380,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-                DatabaseAccess stationsDatabase=DatabaseAccess.getInstance(getApplicationContext());
+                DatabaseAccess stationsDatabase=DatabaseAccess.getInstance(context);
                 //if(stationLatLang[1].contains("IWOPOL"))
                 stationsDatabase.insertStationCoords(Integer.parseInt(stationLatLang[0]),stationLatLang[1],Double.parseDouble(stationLatLang[2]),Double.parseDouble(stationLatLang[3]));
 
@@ -412,21 +393,73 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void startAsyncTask(View v) {
+    public void startAsyncTask(List<GasStation> gasStationList) {
     // method used to get lat/lng from database
 
+        LatLangAsyncTask task=new LatLangAsyncTask(this);
+        task.execute(gasStationList);
     }
 
-    private class latLangAsyncTask extends AsyncTask<DatabaseAccess, Integer, Integer> {
+    private static class LatLangAsyncTask extends AsyncTask<List<GasStation>, Integer, Integer> {
+
+        private WeakReference<MapsActivity> activityWeakReference;
+
+        LatLangAsyncTask(MapsActivity activity){
+            activityWeakReference=new WeakReference<MapsActivity>(activity);
+        }
+
 
         @Override
-        protected Integer doInBackground(DatabaseAccess... params) {
+        protected Integer doInBackground(List<GasStation>... params) {
 
+            MapsActivity activity=activityWeakReference.get();
+            if(activity==null || activity.isFinishing()){
+                return 0;
+            }
             Integer result=0;
 
+            for (GasStation gasStation : params[0]) {
+                /* Build String to look for specific station using Geocoder
+                 *
+                 * if station is found - place marker
+                 * */
+                //Street,City,ID,Name,
+                StringBuilder completeAddress=new StringBuilder();
+                completeAddress.append(gasStation.getCity()).append(" ");
+                completeAddress.append(gasStation.getStreet()).append(";");
+                completeAddress.append(gasStation.getID()).append(";"); // sometimes station name includes ","
+                completeAddress.append(gasStation.getName());
 
+
+                /* TEMPORARILY COMMENTED CUS I WANT TO MAKE A DATABASE WITHOUT MARKERS*/
+
+                final int MIN_FOUND_STATIONS_NUMBER=70;
+                //final int MAX_FOUND_STATIONS_NUMBER=70;
+
+                if(MIN_FOUND_STATIONS_NUMBER<=gasStation.getID()){
+                    //Tighten search scope to one city  to save CPU resources
+                    getAddress(completeAddress.toString(),activity.getApplicationContext(),new GeoHandler(activity.getApplicationContext()));
+                    result++;
+                }
+            }
 
             return result;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
+            MapsActivity activity=activityWeakReference.get();
+            if(activity==null || activity.isFinishing()){
+                return;
+            }
+            Toast.makeText(activity.getApplicationContext(), "Synchronized " + integer + " stations", Toast.LENGTH_SHORT).show();
         }
     }
 

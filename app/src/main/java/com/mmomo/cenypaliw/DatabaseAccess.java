@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +32,12 @@ public class DatabaseAccess {
     }
 
     //Open connection with database
-    public void open() {
+    public void openConnection() {
         this.db = openHelper.getWritableDatabase();
     }
 
     //Close connection with database
-    public void close() {
+    public void closeConnection() {
         if (db != null) {
             this.db.close();
         }
@@ -47,7 +46,7 @@ public class DatabaseAccess {
     public List<GasStation> getStationList() {
         List<GasStation> result = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
-        open();
+        openConnection();
         Cursor c = db.rawQuery(selectQuery, null);
 
         if (c.moveToFirst()) {
@@ -101,7 +100,7 @@ public class DatabaseAccess {
 
             i = 0;
         }
-        close();
+        closeConnection();
         return result;
     }
 
@@ -109,7 +108,7 @@ public class DatabaseAccess {
     public List<GasStation> getStationListFromCity(String city) {
         List<GasStation> result = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
-        open();
+        openConnection();
         Cursor c = db.rawQuery(selectQuery, null);
 
         if (c.moveToFirst()) {
@@ -165,7 +164,7 @@ public class DatabaseAccess {
 
             i = 0;
         }
-        close();
+        closeConnection();
         return result;
     }
     public void insertStationCoords(int id, String name,double lat, double lng){
