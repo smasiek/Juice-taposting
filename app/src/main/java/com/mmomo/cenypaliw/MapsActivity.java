@@ -18,7 +18,9 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,6 +43,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -117,9 +120,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         List<GasStation>stationList=stationsDatabase.getStationList();
 
-        startAsyncTask(stationList);
+        getAddress(stationList,getApplicationContext(),new GeoHandler());
 
-       //
+
+
+
+        //startAsyncTask(stationList);
+
         // forma debuggingu:
         stationsDatabase.closeConnection();
         if (mMap != null) {
@@ -297,45 +304,86 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return address;
     }
 
-    private static void getAddress(final String locationAddress, final Context context, final Handler handler){
+    private static void getAddress(final List<GasStation> stationList, final Context context, final Handler handler){
         /*Creates marker using <String>address
 
         May be  usefull during implementation of Data base with addresses of stations
         or just as a normal search engine in app
          */
-        Thread thread = new Thread(){
-            public void run(){
-                Geocoder geocoder = new Geocoder(context,Locale.getDefault());
+
+        ArrayList<String[]> addresses = new ArrayList<String[]>();
+
+
+        for (GasStation gasStation : stationList) {
+            /* Build String to look for specific station using Geocoder
+             *
+             * if station is found - place marker
+             * */
+
+            //Pattern: {ID,Name,City+Street}
+            String[] address;
+            if(gasStation.getCity().equals(gasStation.getStreet())) {
+                address = new String[]{"" + gasStation.getID(), gasStation.getName(), gasStation.getCity()};
+            }else {
+                address = new String[]{"" + gasStation.getID(), gasStation.getName(), gasStation.getCity() + " " + gasStation.getStreet()};
+            }
+
+            addresses.add(address);
+
+            //Creating array of station addresses
+        }
+
+        final ArrayList<String[]> finalAddresses=addresses;
+        //Making it final
+
+        final Thread thread = new Thread() {
+            public void run() {
+                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                 //Store latitude and longitude in array
-                String[] result = new String[4];
-                try{
-                    String [] completeAddressArray=locationAddress.split(";");
+                
+                //String[] result = new String[4];
+                ArrayList<String> addressesToSend = new ArrayList<>();
+                //Create another array to store prepared Addresses with Lat Lng
+
+                try {
                     /*TODO: check if u use full company name, geocoder is able to return shortened name
 
                    eg. FHU WOJTEK SZUDY ORLEN address.getXXX returns simple ORLEN
                     *
                     */
-                    List<Address> addressList=geocoder.getFromLocationName(completeAddressArray[0],1);
-                    if (addressList!=null && addressList.size()>0){
-                        Address address = addressList.get(0);
-                        result[0]=completeAddressArray[1]; //ID
-                        result[1]=completeAddressArray[2]; //Station full name
-                        result[2]=String.valueOf( address.getLatitude());
-                        result[3]=String.valueOf(address.getLongitude());
+
+                    //for (int i = 0; i < stationList.size(); i++) {
+                    for (int i = 5000; i < 9379; i++) {
+                        //for loop using i to control portion of data sent do database
+                        //smaller portions are calculated faster which is useful while debugging
+                        List<Address> addressList = geocoder.getFromLocationName(String.valueOf(finalAddresses.get(i)[2]), 1);
+                        if (addressList != null && addressList.size() > 0) {
+                            Address address = addressList.get(0);
+
+                            int bias=5000;
+                            //Necessary to get specific station without using index out of array
+
+                            //Pattern: {ID,Name,Lat,Lng}
+                            addressesToSend.add(finalAddresses.get(i)[0] + ";" + finalAddresses.get(i)[1] + ";" + String.valueOf(address.getLatitude()) + ";" + String.valueOf(address.getLongitude()));
+                            //Single address prepared to send, added as String to arrayList
+                            Log.d("AddressToSend string "+stationList.size()+" ",addressesToSend.get(i-bias));
+
+                        } else {
+                            addressesToSend.add(finalAddresses.get(i)[0] + ";" + finalAddresses.get(i)[1] + ";1;1");
+                        }
                     }
-                } catch (IOException e){
+
+                } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    Message message=Message.obtain();
+                    Message message = Message.obtain();
                     message.setTarget(handler);
                     //Set connection with handler
-                    if(result!=null){
-                        message.what=1;
-                        Bundle bundle=new Bundle();
-                        bundle.putString("adress", result[0] +";"+result[1]+";"+result[2]+";"+result[3]);
-                        //Prepare data to send
-                        message.setData(bundle);
-                    }
+                    message.what = 1;
+                    Bundle bundle = new Bundle();
+                    bundle.putStringArrayList("addressList", addressesToSend);
+                    //Prepare data to send
+                    message.setData(bundle);
                     message.sendToTarget();
                     //Send data
                 }
@@ -345,46 +393,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private static class GeoHandler extends Handler {
+    private class GeoHandler extends Handler {
         //Handles data from getAddress() method
-
-        Context context;
-        public GeoHandler(Context context){
-            this.context=context;
-        }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
-            String address;
+            ArrayList<String> address;
 
             if (msg.what == 1) {
                 //Receive message from method
                 Bundle bundle = msg.getData();
-                address = bundle.getString("adress");
+                address = bundle.getStringArrayList("addressList");
             } else {
                 address = null;
             }
 
             if(address!=null) {
-                //This should be deleted in future. Created just to have some marker onCreate
+                DatabaseAccess stationsDatabase=DatabaseAccess.getInstance(getApplicationContext());
+                for (String s : address) {
+                    String[] stationLatLng = s.split(";");
+                    //Returned: {ID,Name,Lat,Lng}
 
-                //?????? why delete this, i dunno
-                String[] stationLatLang = address.split(";");
+                    //Used to place marker, right now we don't want it:
+                    //LatLng locationLatLng = new LatLng(Double.parseDouble(stationLatLng[2]), Double.parseDouble(stationLatLng[3]));
 
-                LatLng locationLatLang = new LatLng(Double.parseDouble(stationLatLang[2]), Double.parseDouble(stationLatLang[3]));
+                    //if(stationLatLng[1].contains("IWOPOL"))
+                    stationsDatabase.insertStationCoords(Integer.parseInt(stationLatLng[0]),stationLatLng[1],Double.parseDouble(stationLatLng[2]),Double.parseDouble(stationLatLng[3]));
 
-
-
+                }
+                stationsDatabase.closeConnection();
                // MarkerOptions locationMarker = new MarkerOptions();
-                //locationMarker.position(locationLatLang);
-
-
-
-                DatabaseAccess stationsDatabase=DatabaseAccess.getInstance(context);
-                //if(stationLatLang[1].contains("IWOPOL"))
-                stationsDatabase.insertStationCoords(Integer.parseInt(stationLatLang[0]),stationLatLang[1],Double.parseDouble(stationLatLang[2]),Double.parseDouble(stationLatLang[3]));
-
-
+                //locationMarker.position(locationLatLng);
 
                 //locationMarker.snippet(stationLatLang[1]);
                // mMap.addMarker(locationMarker);
@@ -400,7 +439,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         task.execute(gasStationList);
     }
 
-    private static class LatLangAsyncTask extends AsyncTask<List<GasStation>, Integer, Integer> {
+    private class LatLangAsyncTask extends AsyncTask<List<GasStation>, Integer, Integer> {
 
         private WeakReference<MapsActivity> activityWeakReference;
 
@@ -413,11 +452,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         protected Integer doInBackground(List<GasStation>... params) {
 
             MapsActivity activity=activityWeakReference.get();
-            if(activity==null || activity.isFinishing()){
+
+            if(activity==null||activity.isFinishing()){
                 return 0;
             }
-            Integer result=0;
 
+            Integer result=0;
+            Looper.prepare();
             for (GasStation gasStation : params[0]) {
                 /* Build String to look for specific station using Geocoder
                  *
@@ -432,31 +473,45 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
                 /* TEMPORARILY COMMENTED CUS I WANT TO MAKE A DATABASE WITHOUT MARKERS*/
-
-                final int MIN_FOUND_STATIONS_NUMBER=70;
-                //final int MAX_FOUND_STATIONS_NUMBER=70;
-
-                if(MIN_FOUND_STATIONS_NUMBER<=gasStation.getID()){
+                try {
+                //final int MIN_FOUND_STATIONS_NUMBER=30;
+                final int MAX_FOUND_STATIONS_NUMBER=50;
+//MIN_FOUND_STATIONS_NUMBER<=gasStation.getID() &&
+                if( gasStation.getID()<=MAX_FOUND_STATIONS_NUMBER){
                     //Tighten search scope to one city  to save CPU resources
-                    getAddress(completeAddress.toString(),activity.getApplicationContext(),new GeoHandler(activity.getApplicationContext()));
+
+
+
+                    //getAddress(completeAddress.toString(),activity.getApplicationContext(),new GeoHandler());
+
+
+
                     result++;
+                    Thread.sleep(50);
+                    Log.d("Attempt nr: ","| "+result);
+                    // NIE WIEM CZEMU NIE DODAJE DO BAZY W OGOLE RZECZY MOZEBYC JEDNAK TEN STATIC ZJEBANY ALBO COS INNEGO
+                    // W OGOLE PROGRAM SIE WYKRZACZA PRZY WIEKSZEJ ILOSCI I JEST CIULOWO
+                    // nwm nwm, trzeba to podebuggowac i zobaczyc
+
+                }else{
+                    break;
+                }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-
             return result;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
         }
 
         @Override
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
+            Log.i("Finished"," syncing");
 
             MapsActivity activity=activityWeakReference.get();
-            if(activity==null || activity.isFinishing()){
+
+            if(activity==null||activity.isFinishing()){
                 return;
             }
             Toast.makeText(activity.getApplicationContext(), "Synchronized " + integer + " stations", Toast.LENGTH_SHORT).show();

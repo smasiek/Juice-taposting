@@ -62,5 +62,18 @@ YourStationList
     Then it creates it's own version and override it in app files. I found this unique database
     in Emulator files and noticed that my commands works well and unique constraint was caused
     by the fact that data i wanted to save already existed
-    + Probably: creating new separate thread only for memory absorbing calculations like: finding lat lng with geocoder
+    + Making app run hard calculations (like finding lat lng using city+street that i pass 
+    from database) in background thread separated from UI thread. Android apps try to avoid
+    being stucked and throw an error while UI thread (the main thread where we mostly operate)
+    is losing frames. Doing a lot of though calculation was causing an error.
+    Now we store necessary info from database in a big array, create new array with lat lang 
+    collected from geocoder and send it using pipe as a single big string array. Then handler can
+    insert it to new database. That's how we analysed data and got what we needed.
+    In next verions of app we can delete this block of code because we have lat and lng of station.
+    It will work faster that way. Exceptions like station where exact street is unknown
+    and geocoder can't handle them are omitted by replacing their "lat;lng" with "1.0;1.0".
+    That way they will be easy to spot and analyse. What's more they won't cause NonNull exception
+    As a result i received 148 stations that was not found. I can omit them because they are so
+    small that probability of looking for them is very low. Also i will add an option to *add custom*
+    station in the future
 

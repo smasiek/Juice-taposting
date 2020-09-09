@@ -181,9 +181,9 @@ public class DatabaseAccess {
         values.put("Name",name);
         values.put("Latitude",lat);
         values.put("Longitude",lng);
-        Log.d("Attempt",values.getAsString("Name") + " " + lat + " " + lng);
+        Log.i("Attempt",values.getAsString("Name") + " " + lat + " " + lng);
         db.insert(GAS_STATIONS_COORD_TABLE,null,values);
         //db.execSQL("INSERT INTO Coordinates (ID_station,Name, Latitude, Longitude) VALUES ("+id+", '"+name+"', "+lat+", "+lng+");");
-        closeConnection();
+        //closeConnection();
     }
 }
