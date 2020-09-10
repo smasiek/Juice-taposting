@@ -26,7 +26,7 @@ import java.util.List;
 import static com.mmomo.cenypaliw.GasStationNames.*;
 import static com.mmomo.cenypaliw.GasStationIcons.*;
 
-public class StationListActivity extends AppCompatActivity {
+public class YourStationListActivity extends AppCompatActivity {
 
     ListView listView;
     List<String> stationName = new ArrayList<>();

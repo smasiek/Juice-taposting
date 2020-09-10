@@ -13,6 +13,8 @@ public class GasStation {
     private double ON;
     private double LPG;
     private double CNG;
+    private double lat;
+    private double lng;
 
 
     public GasStation(int ID, String name, String street,
@@ -34,6 +36,33 @@ public class GasStation {
 
     public GasStation() {
 
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public GasStation(int ID, String name, String street,
+                      String city, String postalCode, String province,
+                      String county, double RON95, double RON98, double ON, double LPG, double CNG, double lat, double lng) {
+        this.ID = ID;
+        this.name = name;
+        this.street = street;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.province = province;
+        this.county = county;
+        this.RON95 = RON95;
+        this.RON98 = RON98;
+        this.ON = ON;
+        this.LPG = LPG;
+        this.CNG = CNG;
+        this.lat = lat;
+        this.lng = lng;
     }
 
     public int getID() {

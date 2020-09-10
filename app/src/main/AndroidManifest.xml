@@ -23,10 +23,10 @@
         <activity
             android:name=".AddYourStation"
             android:label="@string/dodaj_nowa_stacje"
-            android:parentActivityName=".StationListActivity"
+            android:parentActivityName=".YourStationListActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".StationListActivity"
+            android:name=".YourStationListActivity"
             android:label="@string/twoje_stacje"
             android:parentActivityName=".MapsActivity"
             android:theme="@style/AppTheme.NoActionBar" />

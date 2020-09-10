@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -8,62 +7,122 @@
         android:id="@+id/stationIconMarkerView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
         android:contentDescription="@string/station_icon"
-        android:src="@drawable/gas_station"/>
+        android:src="@drawable/gas_station" />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
+
         <TextView
             android:id="@+id/stationNameTextMarkerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:text="Nazwa stacji w przyszłości pobrana z bazy"
             android:textColor="#000"
-            android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_alignParentStart="true"/>
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/stationPetrolPriceTextMarkerView"
+            android:id="@+id/stationRON95PriceTextMarkerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cena benzyny: "
-            android:textColor="#2B2B2B"
-            android:textStyle="bold"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/stationNameTextMarkerView"/>
-
-        <TextView
-            android:id="@+id/stationPetrolPriceMarkerValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#2B2B2B"
-            android:textStyle="bold"
-            android:layout_alignParentEnd="true"
             android:layout_below="@+id/stationNameTextMarkerView"
-            android:layout_toRightOf="@+id/stationPetrolPriceTextMarkerView"
-            android:text="0.00" />
+            android:layout_alignParentStart="true"
+            android:text="RON95: "
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/stationRON95PriceMarkerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/stationNameTextMarkerView"
+            android:layout_toEndOf="@+id/stationRON95PriceTextMarkerView"
+            android:text="0.00"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/stationRON98PriceTextMarkerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/stationNameTextMarkerView"
+            android:layout_toEndOf="@+id/stationRON95PriceMarkerValue"
+            android:text="   RON98: "
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/stationRON98PriceMarkerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/stationNameTextMarkerView"
+            android:layout_toEndOf="@+id/stationRON98PriceTextMarkerView"
+            android:text="0.00"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/stationONPriceTextMarkerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/stationNameTextMarkerView"
+            android:layout_toEndOf="@+id/stationRON98PriceMarkerValue"
+            android:text="   ON: "
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/stationONPriceMarkerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/stationNameTextMarkerView"
+            android:layout_toEndOf="@+id/stationONPriceTextMarkerView"
+            android:text="0.00"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/stationLPGPriceTextMarkerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/stationNameTextMarkerView"
+            android:layout_toEndOf="@+id/stationONPriceMarkerValue"
+            android:text="   LPG: "
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/stationLPGPriceMarkerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/stationNameTextMarkerView"
+            android:layout_toEndOf="@+id/stationLPGPriceTextMarkerView"
+            android:text="0.00"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/stationStreetMarkerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#2B2B2B"
-            android:textStyle="bold"
+            android:layout_below="@+id/stationRON95PriceTextMarkerView"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/stationPetrolPriceTextMarkerView"
-            android:text="Nr lokalu + Ulica" />
+            android:text="Nr lokalu + Ulica"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/stationCityMarkerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#2B2B2B"
-            android:textStyle="bold"
-            android:layout_alignParentStart="true"
             android:layout_below="@+id/stationStreetMarkerView"
-            android:text="Miasto" />
+            android:layout_alignParentStart="true"
+            android:text="Miasto"
+            android:textColor="#2B2B2B"
+            android:textStyle="bold" />
+
         <Button
             android:id="@+id/saveStationMarkerButton"
             android:layout_width="wrap_content"
@@ -73,6 +132,7 @@
             android:text="@string/zapisz_stacje"
 
             />
+
     </RelativeLayout>
 
 

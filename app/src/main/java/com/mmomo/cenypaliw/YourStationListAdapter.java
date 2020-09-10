@@ -33,34 +33,68 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
         }
 
         TextView stationName=(TextView) convertView.findViewById(R.id.stationNameTextView);
-        TextView stationPrice=(TextView) convertView.findViewById(R.id.stationPetrolPriceValue);
+        TextView fuelPreference=(TextView) convertView.findViewById(R.id.stationFuelPriceTextView);
+        TextView stationPrice=(TextView) convertView.findViewById(R.id.stationFuelPriceValue);
         TextView stationStreet=(TextView) convertView.findViewById(R.id.stationStreeTextView);
         TextView stationCity=(TextView) convertView.findViewById(R.id.stationCityTextView);
         ImageView stationImage=(ImageView) convertView.findViewById(R.id.stationIconView);
 
+
+        //TODO:If signing in already implemented add showing station prices using user preferences
+
+        //For now hardcoded:
+        String preferableFuel="ON95";
+
+        switch(preferableFuel){
+            case "ON98":stationPrice.setText(String.valueOf(station.getRON98()));
+                fuelPreference.setText("Cena ON98: ");
+                break;
+            case "ON":stationPrice.setText(String.valueOf(station.getON()));
+                fuelPreference.setText("Cena ON: ");
+                break;
+            case "LPG":stationPrice.setText(String.valueOf(station.getLPG()));
+                fuelPreference.setText("Cena LPG: ");
+                break;
+            case "CNG":stationPrice.setText(String.valueOf(station.getCNG()));
+                fuelPreference.setText("Cena CNG: ");
+                break;
+            default:stationPrice.setText(String.valueOf(station.getRON95()));
+                fuelPreference.setText("Cena ON95: ");
+                break;
+        }
+
+        stationStreet.setText(station.getStreet());
+        stationCity.setText(station.getCity());
+
         if(station.getName()!=null){
-            stationName.setText(station.getName());
+
+            setStationNameImage(station.getName(), stationImage,stationName);
+
         } else {
             stationName.setText("Station name error");
         }
 
-        stationPrice.setText(String.valueOf(station.getRON95()));
-        //TODO:More text views for other type of petrol must be added
-        stationStreet.setText(station.getStreet());
-        stationCity.setText(station.getCity());
-
-        if(station.getName().contains("ORLEN")) {
-            //Set station icon using its name and enum
-            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(ORLEN)]);
-        } else if(station.getName().contains("LOTOS")){
-            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(LOTOS)]);
-        } else if(station.getName().contains("GROSAR")){
-            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(GROSAR)]);
-        } else if(station.getName().contains("BP")){
-            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(BP)]);
-        } else {
-            stationImage.setImageResource(GasStationIcons.gasStationIcons[GasStationNames.getPosition(NONE)]);
-        }
         return convertView;
     }
+
+    public void setStationNameImage(String stationName, ImageView stationImage,TextView stationNameView){
+        if(stationName.contains("ORLEN")) {
+            //Set station icon using its name and enum
+            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(ORLEN)]);
+            stationNameView.setText("ORLEN");
+        } else if(stationName.contains("LOTOS")){
+            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(LOTOS)]);
+            stationNameView.setText("LOTOS");
+        } else if(stationName.contains("GROSAR")){
+            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(GROSAR)]);
+            stationNameView.setText("GROSAR");
+        } else if(stationName.contains("BP")){
+            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(BP)]);
+            stationNameView.setText("BP");
+        } else {
+            stationImage.setImageResource(GasStationIcons.gasStationIcons[GasStationNames.getPosition(NONE)]);
+            stationNameView.setText(stationName);
+        }
+    }
+
 }
