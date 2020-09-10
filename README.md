@@ -76,4 +76,10 @@ YourStationList
     As a result i received 148 stations that was not found. I can omit them because they are so
     small that probability of looking for them is very low. Also i will add an option to *add custom*
     station in the future
-
+    
+22. Redesigning of YourStationList rows and MarkerInfoWindow
+23. Create markers on the map using lat lng from database
+    + Problems:
+        + While making table with lat lng Geocoder made some mistakes and some stations are misplaced
+    + Solutions:
+        + ??
