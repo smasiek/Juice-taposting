@@ -68,7 +68,7 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
 
         if(station.getName()!=null){
 
-            setStationNameImage(station.getName(), stationImage,stationName);
+            MapsActivity.setStationNameImage(station.getName(), stationImage,stationName);
 
         } else {
             stationName.setText("Station name error");
@@ -77,24 +77,6 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
         return convertView;
     }
 
-    public void setStationNameImage(String stationName, ImageView stationImage,TextView stationNameView){
-        if(stationName.contains("ORLEN")) {
-            //Set station icon using its name and enum
-            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(ORLEN)]);
-            stationNameView.setText("ORLEN");
-        } else if(stationName.contains("LOTOS")){
-            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(LOTOS)]);
-            stationNameView.setText("LOTOS");
-        } else if(stationName.contains("GROSAR")){
-            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(GROSAR)]);
-            stationNameView.setText("GROSAR");
-        } else if(stationName.contains("BP")){
-            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(BP)]);
-            stationNameView.setText("BP");
-        } else {
-            stationImage.setImageResource(GasStationIcons.gasStationIcons[GasStationNames.getPosition(NONE)]);
-            stationNameView.setText(stationName);
-        }
-    }
+
 
 }

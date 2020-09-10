@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +50,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import static com.mmomo.cenypaliw.GasStationIcons.gasStationIcons;
+import static com.mmomo.cenypaliw.GasStationNames.BP;
+import static com.mmomo.cenypaliw.GasStationNames.GROSAR;
+import static com.mmomo.cenypaliw.GasStationNames.LOTOS;
+import static com.mmomo.cenypaliw.GasStationNames.NONE;
+import static com.mmomo.cenypaliw.GasStationNames.ORLEN;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -138,33 +146,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 public View getInfoContents(Marker marker) {
                     //Modify content of locationMarker infoWindow
 
-                    View row = getLayoutInflater().inflate(R.layout.custom_marker_info, null);
-                    //Get access to textViews in order to modify them
-                    TextView t1_stationName = (TextView) row.findViewById(R.id.stationNameTextMarkerView);
-                    TextView t2_stationRON95Price = (TextView) row.findViewById(R.id.stationRON95PriceMarkerValue);
-                    TextView t3_stationRON98Price = (TextView) row.findViewById(R.id.stationRON98PriceMarkerValue);
-                    TextView t4_stationONPrice = (TextView) row.findViewById(R.id.stationONPriceMarkerValue);
-                    TextView t5_stationLPGPrice = (TextView) row.findViewById(R.id.stationLPGPriceMarkerValue);
-                    TextView t6_stationStreet = (TextView) row.findViewById(R.id.stationStreetMarkerView);
-                    TextView t7_stationCity = (TextView) row.findViewById(R.id.stationCityMarkerView);
+                    try {
+                        View row = getLayoutInflater().inflate(R.layout.custom_marker_info, null);
+                        //Get access to textViews in order to modify them
+                        ImageView i1_stationIcon=row.findViewById(R.id.stationIconMarkerView);
+                        TextView t1_stationName = row.findViewById(R.id.stationNameTextMarkerView);
+                        TextView t2_stationRON95Price = row.findViewById(R.id.stationRON95PriceMarkerValue);
+                        TextView t3_stationRON98Price = row.findViewById(R.id.stationRON98PriceMarkerValue);
+                        TextView t4_stationONPrice = row.findViewById(R.id.stationONPriceMarkerValue);
+                        TextView t5_stationLPGPrice = row.findViewById(R.id.stationLPGPriceMarkerValue);
+                        TextView t6_stationStreet = row.findViewById(R.id.stationStreetMarkerView);
+                        TextView t7_stationCity = row.findViewById(R.id.stationCityMarkerView);
 
-                    LatLng ll = marker.getPosition();
-                    //Get location position marker and then update infoWindow
-                    //TODO: geocoderem przerobić LatLng na adres i po adresie znaleźć nazwe w bazie danych
 
-                    //Pattern "Name;RON95;RON98;ON;LPG;Street;City"
-                    String[] markerInfo=marker.getTitle().split(";");
+                        //Pattern "Name;RON95;RON98;ON;LPG;Street;City"
+                        String[] markerInfo = marker.getTitle().split(";");
 
-                    t1_stationName.setText(markerInfo[0]);
-                    t2_stationRON95Price.setText(markerInfo[1]);
-                    t3_stationRON98Price.setText(markerInfo[2]);
-                    t4_stationONPrice.setText(markerInfo[3]);
-                    t5_stationLPGPrice.setText(markerInfo[4]);
-                    t6_stationStreet.setText(markerInfo[5]);
-                    t7_stationCity.setText(markerInfo[6]);
-
-                    // t5_stationCountry.setText(getCountryFromLatLng(ll.latitude, ll.longitude));
-                    return row;
+                        setStationNameImage(markerInfo[0],i1_stationIcon,t1_stationName);
+                        t2_stationRON95Price.setText(markerInfo[1]);
+                        t3_stationRON98Price.setText(markerInfo[2]);
+                        t4_stationONPrice.setText(markerInfo[3]);
+                        t5_stationLPGPrice.setText(markerInfo[4]);
+                        t6_stationStreet.setText(markerInfo[5]);
+                        t7_stationCity.setText(markerInfo[6]);
+                        return row;
+                    } catch (RuntimeException e) {
+                        marker.setTitle("Your location");
+                        return null;
+                    }
                 }
             });
         }
@@ -235,6 +244,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         }));
+    }
+
+    public static void setStationNameImage(String stationName, ImageView stationImage, TextView stationNameView){
+        if(stationName.contains("ORLEN")) {
+            //Set station icon using its name and enum
+            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(ORLEN)]);
+            stationNameView.setText("Stacja paliw Orlen");
+        } else if(stationName.contains("LOTOS")){
+            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(LOTOS)]);
+            stationNameView.setText("Stacja paliw LOTOS");
+        } else if(stationName.contains("GROSAR")){
+            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(GROSAR)]);
+            stationNameView.setText("Stacja paliw Grosar");
+        } else if(stationName.contains("BP")){
+            stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(BP)]);
+            stationNameView.setText("Stacja paliw BP");
+        } else {
+            stationImage.setImageResource(GasStationIcons.gasStationIcons[GasStationNames.getPosition(NONE)]);
+            stationNameView.setText(stationName);
+        }
     }
 
     private String getStreetFromLatLng(double Latitude, double Longtitude) {
@@ -392,15 +421,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             addressesToSend.add(finalAddresses.get(i)[0] + ";" + finalAddresses.get(i)[1] + ";1;1");
                         }
                     }
-                } catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    Message message=Message.obtain();
+                    Message message = Message.obtain();
                     message.setTarget(handler);
                     //Set connection with handler
-                    if(addressesToSend!=null){
-                        message.what=1;
-                        Bundle bundle=new Bundle();
+                    if (addressesToSend != null) {
+                        message.what = 1;
+                        Bundle bundle = new Bundle();
                         bundle.putStringArrayList("address", addressesToSend);
                         //Prepare data to send
                         message.setData(bundle);
