@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,7 +54,7 @@ import static com.mmomo.cenypaliw.GasStationNames.NONE;
 import static com.mmomo.cenypaliw.GasStationNames.ORLEN;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
-//Main activity containing map and markers
+    //Main activity containing map and markers
     private GoogleMap mMap;
     //Provide access to current location
     public FusedLocationProviderClient fusedLocationProviderClient;
@@ -69,6 +70,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
         //Set custom toolbar
@@ -108,13 +110,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Provide current location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLastLocation();
-        currentLocation=getLastKnownLocation();
+        currentLocation = getLastKnownLocation();
 
         LatLng currLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         MarkerOptions currLocationMarker = new MarkerOptions();
 
         //Set curr location to Jasło as emulator doesn't receive current location info
-        currLocation=new LatLng(49.74506, 21.47252);
+        currLocation = new LatLng(49.74506, 21.47252);
         //Set marker at current location
         currLocationMarker.position(currLocation);
         currLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.your_marker));
@@ -146,7 +148,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     try {
                         View row = getLayoutInflater().inflate(R.layout.custom_marker_info, null);
                         //Get access to textViews in order to modify them
-                        ImageView i1_stationIcon=row.findViewById(R.id.stationIconMarkerView);
+                        ImageView i1_stationIcon = row.findViewById(R.id.stationIconMarkerView);
                         TextView t1_stationName = row.findViewById(R.id.stationNameTextMarkerView);
                         TextView t2_stationRON95Price = row.findViewById(R.id.stationRON95PriceMarkerValue);
                         TextView t3_stationRON98Price = row.findViewById(R.id.stationRON98PriceMarkerValue);
@@ -159,7 +161,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         //Pattern "Name;RON95;RON98;ON;LPG;Street;City"
                         String[] markerInfo = marker.getTitle().split(";");
 
-                        setStationNameImage(markerInfo[0],i1_stationIcon,t1_stationName);
+                        setStationNameImage(markerInfo[0], i1_stationIcon, t1_stationName);
                         t2_stationRON95Price.setText(markerInfo[1]);
                         t3_stationRON98Price.setText(markerInfo[2]);
                         t4_stationONPrice.setText(markerInfo[3]);
@@ -206,7 +208,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         List<String> providers = mLocationManager.getProviders(true);
         Location bestLocation = null;
         for (String provider : providers) {
-            if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 //Save last location
                 l = mLocationManager.getLastKnownLocation(provider);
             }
@@ -237,25 +239,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onSuccess(Location location) {
                 //If last location found, change current location
-                if(location!=null){
-                    currentLocation=location;
+                if (location != null) {
+                    currentLocation = location;
                 }
             }
         }));
     }
 
-    public static void setStationNameImage(String stationName, ImageView stationImage, TextView stationNameView){
-        if(stationName.contains("ORLEN")) {
+    @SuppressLint("SetTextI18n")
+    public static void setStationNameImage(String stationName, ImageView stationImage, TextView stationNameView) {
+        if (stationName.contains("ORLEN")) {
             //Set station icon using its name and enum
             stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(ORLEN)]);
             stationNameView.setText("Stacja paliw Orlen");
-        } else if(stationName.contains("LOTOS")){
+        } else if (stationName.contains("LOTOS")) {
             stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(LOTOS)]);
             stationNameView.setText("Stacja paliw LOTOS");
-        } else if(stationName.contains("GROSAR")){
+        } else if (stationName.contains("GROSAR")) {
             stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(GROSAR)]);
             stationNameView.setText("Stacja paliw Grosar");
-        } else if(stationName.contains("BP")){
+        } else if (stationName.contains("BP")) {
             stationImage.setImageResource(gasStationIcons[GasStationNames.getPosition(BP)]);
             stationNameView.setText("Stacja paliw BP");
         } else {
@@ -275,9 +278,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //Get full address line
                 String completeAddress = "" + returnAddress.getAddressLine(0);
                 //Separate street name from other data
-                String[] tempString=completeAddress.split(",",10);
+                String[] tempString = completeAddress.split(",", 10);
                 //Street is in the beginning of address line
-                address=tempString[0];
+                address = tempString[0];
             } else {
                 Toast.makeText(this, "Address not found", Toast.LENGTH_SHORT).show();
             }
@@ -370,7 +373,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             //Necessary to get specific station without using index out of array
 
                             //Pattern: {ID,Name,Lat,Lng}
-                            addressesToSend.add(finalAddresses.get(i)[0] + ";" + finalAddresses.get(i)[1] + ";" + String.valueOf(address.getLatitude()) + ";" + String.valueOf(address.getLongitude()));
+                            addressesToSend.add(finalAddresses.get(i)[0] + ";" + finalAddresses.get(i)[1] + ";" + address.getLatitude() + ";" + address.getLongitude());
                             //Single address prepared to send, added as String to arrayList
                             Log.d("AddressToSend string " + stationList.size() + " ", addressesToSend.get(i - bias));
 
@@ -382,7 +385,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     e.printStackTrace();
                 } finally {
                     //Send result using pipe
-                    Message message=Message.obtain();
+                    Message message = Message.obtain();
                     message.setTarget(handler);
                     //Set connection with handler
                     if (addressesToSend != null) {

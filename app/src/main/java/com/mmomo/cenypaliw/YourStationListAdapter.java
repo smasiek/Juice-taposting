@@ -14,13 +14,10 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import static com.mmomo.cenypaliw.GasStationIcons.gasStationIcons;
-import static com.mmomo.cenypaliw.GasStationNames.*;
-
 public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
     //Adapter creating rows in Your Station List
-    public YourStationListAdapter(Context context, List<YourGasStation> stations){
-        super(context,0,stations);
+    public YourStationListAdapter(Context context, List<YourGasStation> stations) {
+        super(context, 0, stations);
     }
 
     @SuppressLint("SetTextI18n")
@@ -29,37 +26,42 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         GasStation station = getItem(position);
 
-        if(convertView==null){
-            convertView= LayoutInflater.from(getContext()).inflate(R.layout.station_list_row,parent,false);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.station_list_row, parent, false);
         }
         //Get access to TextViews to modify them
-        TextView stationName=(TextView) convertView.findViewById(R.id.stationNameTextView);
-        TextView fuelPreference=(TextView) convertView.findViewById(R.id.stationFuelPriceTextView);
-        TextView stationPrice=(TextView) convertView.findViewById(R.id.stationFuelPriceValue);
-        TextView stationStreet=(TextView) convertView.findViewById(R.id.stationStreeTextView);
-        TextView stationCity=(TextView) convertView.findViewById(R.id.stationCityTextView);
-        ImageView stationImage=(ImageView) convertView.findViewById(R.id.stationIconView);
+        TextView stationName = convertView.findViewById(R.id.stationNameTextView);
+        TextView fuelPreference = convertView.findViewById(R.id.stationFuelPriceTextView);
+        TextView stationPrice = convertView.findViewById(R.id.stationFuelPriceValue);
+        TextView stationStreet = convertView.findViewById(R.id.stationStreeTextView);
+        TextView stationCity = convertView.findViewById(R.id.stationCityTextView);
+        ImageView stationImage = convertView.findViewById(R.id.stationIconView);
 
 
         //TODO:If signing in already implemented add showing station prices using user preferences
 
         //For now hardcoded:
-        String preferableFuel="ON95";
+        String preferableFuel = "ON95";
 
-        switch(preferableFuel){
-            case "ON98":stationPrice.setText(String.valueOf(station.getRON98()));
+        switch (preferableFuel) {
+            case "ON98":
+                stationPrice.setText(String.valueOf(station.getRON98()));
                 fuelPreference.setText("Cena ON98: ");
                 break;
-            case "ON":stationPrice.setText(String.valueOf(station.getON()));
+            case "ON":
+                stationPrice.setText(String.valueOf(station.getON()));
                 fuelPreference.setText("Cena ON: ");
                 break;
-            case "LPG":stationPrice.setText(String.valueOf(station.getLPG()));
+            case "LPG":
+                stationPrice.setText(String.valueOf(station.getLPG()));
                 fuelPreference.setText("Cena LPG: ");
                 break;
-            case "CNG":stationPrice.setText(String.valueOf(station.getCNG()));
+            case "CNG":
+                stationPrice.setText(String.valueOf(station.getCNG()));
                 fuelPreference.setText("Cena CNG: ");
                 break;
-            default:stationPrice.setText(String.valueOf(station.getRON95()));
+            default:
+                stationPrice.setText(String.valueOf(station.getRON95()));
                 fuelPreference.setText("Cena ON95: ");
                 break;
         }
@@ -67,9 +69,9 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
         stationStreet.setText(station.getStreet());
         stationCity.setText(station.getCity());
 
-        if(station.getName()!=null){
+        if (station.getName() != null) {
 
-            MapsActivity.setStationNameImage(station.getName(), stationImage,stationName);
+            MapsActivity.setStationNameImage(station.getName(), stationImage, stationName);
 
         } else {
             stationName.setText("Station name error");
@@ -77,7 +79,6 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
 
         return convertView;
     }
-
 
 
 }

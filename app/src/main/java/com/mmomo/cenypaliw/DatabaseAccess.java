@@ -85,14 +85,14 @@ public class DatabaseAccess {
                 } else {
                     //Handle strings equal to "" caused by 0 in database table
                     //Size=5 because there are 5 types of petrol
-                    Double[] petrol=new Double[5];
-                    for(int j=7;j<12;j++){
-                        if(c.getString(j).equals("")){
+                    Double[] petrol = new Double[5];
+                    for (int j = 7; j < 12; j++) {
+                        if (c1.getString(j).equals("")) {
                             //Replace "" with 0.0
-                            petrol[j-7]=0.0;
-                        }else{
+                            petrol[j - 7] = 0.0;
+                        } else {
                             //Get actual value
-                            petrol[j-7]=Double.parseDouble(c.getString(j));
+                            petrol[j - 7] = Double.parseDouble(c1.getString(j));
                         }
                     }
                     GasStation gasStation = new GasStation(Integer.parseInt(c1.getString(0)),
@@ -123,7 +123,7 @@ public class DatabaseAccess {
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
             do {
-                if( c.getString(3).equals(city)) {
+                if (c.getString(3).equals(city)) {
                     //First get stations from city then handle exceptional cases
                     if (c.getString(2) == null) {
                         //Handle null Street input when small town has none
