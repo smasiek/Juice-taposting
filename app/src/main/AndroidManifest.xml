@@ -18,10 +18,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".AddNewStation"
+            android:name=".AddNewStationActivity"
             android:parentActivityName=".MapsActivity" />
         <activity
-            android:name=".AddYourStation"
+            android:name=".AddYourStationActivity"
             android:label="@string/dodaj_nowa_stacje"
             android:parentActivityName=".YourStationListActivity"
             android:theme="@style/AppTheme.NoActionBar" />

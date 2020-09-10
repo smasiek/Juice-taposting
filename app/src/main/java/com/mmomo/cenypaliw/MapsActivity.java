@@ -1,12 +1,10 @@
 package com.mmomo.cenypaliw;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -40,14 +38,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -59,10 +53,12 @@ import static com.mmomo.cenypaliw.GasStationNames.NONE;
 import static com.mmomo.cenypaliw.GasStationNames.ORLEN;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
-
+//Main activity containing map and markers
     private GoogleMap mMap;
+    //Provide access to current location
     public FusedLocationProviderClient fusedLocationProviderClient;
     Location currentLocation;
+    //Typical request code for write permission
     private static final int REQUEST_CODE = 101;
 
 
@@ -75,12 +71,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //Set custom toolbar
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //Create roll-down menu in top right corner
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.rolldown_menu, menu);
         return true;
@@ -88,6 +86,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //Handle roll-down menu item click
         switch (item.getItemId()) {
             case R.id.twojeStacje:
                 Intent intent = new Intent(this,
@@ -95,7 +94,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(intent);
                 return true;
             case R.id.dodajNowaStacje:
-                Intent intent2 = new Intent(this, AddNewStation.class);
+                Intent intent2 = new Intent(this, AddNewStationActivity.class);
                 startActivity(intent2);
                 return true;
         }
@@ -109,31 +108,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Provide current location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLastLocation();
-        currentLocation = getLastKnownLocation();
+        currentLocation=getLastKnownLocation();
 
-//        LatLng currLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        LatLng currLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         MarkerOptions currLocationMarker = new MarkerOptions();
+
         //Set curr location to Jasło as emulator doesn't receive current location info
-        LatLng currLocation = new LatLng(49.74506, 21.47252);
+        currLocation=new LatLng(49.74506, 21.47252);
         //Set marker at current location
         currLocationMarker.position(currLocation);
         currLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.your_marker));
-        currLocationMarker.title("Your current location");
         mMap.addMarker(currLocationMarker);
-        //mMap.addMarker(new MarkerOptions().position(currLocation).title("This is your current location"));
-        // mMap.addMarker(new MarkerOptions().position(currLocation).icon(BitmapDescriptorFactory.fromResource(R.drawable.you_marker)));
+        //Set zoom at your current location
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currLocation));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currLocation, 13), 5000, null);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
+        //Create instance of external storage with stations info
         DatabaseAccess stationsDatabase = DatabaseAccess.getInstance(getApplicationContext());
         List<GasStation> stationList = stationsDatabase.getStationList();
 
         setMarkers(stationList);
 
-
         if (mMap != null) {
-
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 //Access to infoWindow
                 @Override
@@ -209,13 +206,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         List<String> providers = mLocationManager.getProviders(true);
         Location bestLocation = null;
         for (String provider : providers) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED) {
+                //Save last location
                 l = mLocationManager.getLastKnownLocation(provider);
             }
             if (l == null) {
+                //???
                 continue;
             }
             if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                //If l has better accutacy than bestLocation then update bestLocation
                 bestLocation = l;
             }
         }
@@ -223,9 +223,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    //Probably this method may be deleted in future, i don't know if getLastKnownLocation works without it
     private void fetchLastLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Check for necessary permissions
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_CODE);
             return;
@@ -234,13 +236,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         task.addOnSuccessListener((new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-
-                if (location != null) {
-                    Toast.makeText(getApplicationContext(), "cos", Toast.LENGTH_SHORT).show();
-                    currentLocation = location;
-                    Toast.makeText(getApplicationContext(), currentLocation.getLatitude() +
-                            "" + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
-                    //To moze bedzie mozna usunac v
+                //If last location found, change current location
+                if(location!=null){
+                    currentLocation=location;
                 }
             }
         }));
@@ -267,17 +265,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private String getStreetFromLatLng(double Latitude, double Longtitude) {
-        //Return name of street
+        //Return the name of street using latitude and longitude
         String address = "";
         Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
         try {
-
             List<Address> addresses = geocoder.getFromLocation(Latitude, Longtitude, 1);
             if (addresses != null) {
                 Address returnAddress = addresses.get(0);
+                //Get full address line
                 String completeAddress = "" + returnAddress.getAddressLine(0);
-                String[] tempString = completeAddress.split(",", 10);
-                address = tempString[0];
+                //Separate street name from other data
+                String[] tempString=completeAddress.split(",",10);
+                //Street is in the beginning of address line
+                address=tempString[0];
             } else {
                 Toast.makeText(this, "Address not found", Toast.LENGTH_SHORT).show();
             }
@@ -289,66 +289,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private String getCityFromLatLng(double Latitude, double Longtitude) {
+        //Return city using latitude and longitude
         String address = "";
         Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
         try {
-
             List<Address> addresses = geocoder.getFromLocation(Latitude, Longtitude, 1);
             if (addresses != null) {
                 Address returnAddress = addresses.get(0);
-                StringBuilder stringBuilderReturnAddress = new StringBuilder("");
-                stringBuilderReturnAddress.append(returnAddress.getPostalCode()).append(" ");
-                stringBuilderReturnAddress.append(returnAddress.getLocality());
-                address = stringBuilderReturnAddress.toString();
+                //Connect postal code and name of city in one String
+                String stringReturnAddress = "" + returnAddress.getPostalCode() + " " +
+                        returnAddress.getLocality();
+                address = stringReturnAddress;
             } else {
                 Toast.makeText(this, "Address not found", Toast.LENGTH_SHORT).show();
             }
 
         } catch (Exception e) {
-            Toast.makeText(this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
-        }
-        return address;
-    }
-
-    private String getCountryFromLatLng(double Latitude, double Longtitude) {
-        String address = "";
-        Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
-        try {
-
-            List<Address> addresses = geocoder.getFromLocation(Latitude, Longtitude, 1);
-            if (addresses != null) {
-                Address returnAddress = addresses.get(0);
-                address = "" + returnAddress.getCountryName();
-            } else {
-                Toast.makeText(this, "Address not found", Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
-        }
-        return address;
-    }
-
-
-    //To jest do wyjebania chyba
-    private String getNameFromLatLng(double Latitude, double Longtitude) {
-        String address = "";
-        Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
-        try {
-
-            List<Address> addresses = geocoder.getFromLocation(Latitude, Longtitude, 1);
-            if (addresses != null) {
-                Address returnAddress = addresses.get(0);
-                //
-                String completeAddress = "" + returnAddress.getAddressLine(0);
-                String[] tempString = completeAddress.split(",", 10);
-                address = tempString[0];
-            } else {
-                Toast.makeText(this, "Address not found", Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         return address;
     }
@@ -424,7 +381,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    Message message = Message.obtain();
+                    //Send result using pipe
+                    Message message=Message.obtain();
                     message.setTarget(handler);
                     //Set connection with handler
                     if (addressesToSend != null) {

@@ -6,7 +6,7 @@ import android.widget.Toast;
 import java.util.List;
 
 public class YourGasStation extends GasStation {
-
+    //Gas station added to Your Station List, stored in separate database with its specific ID
     private int ID_your_station;
 
     public YourGasStation(int ID, int ID_your_station, String name, String street, String city, String postalCode, String province, String county, double RON95, double RON98, double ON, double LPG, double CNG) {
@@ -17,17 +17,18 @@ public class YourGasStation extends GasStation {
 
     public YourGasStation(String city, String name, Context context) {
         super();
-        //Probably this will need updating: there will be more String in constructor in order to distinguish stations
-
+        //TODO:Probably this will need updating: there will be more String in constructor in order to distinguish stations
 
         DatabaseAccess stationsDatabase=DatabaseAccess.getInstance(context);
-        // 1.Wyłuskanie stacji z wybranego miasta
+        //Get list of stations from the city
         List<GasStation>stationListFromCity=stationsDatabase.getStationListFromCity(city);
 
-        // 2. Przejscie po liscie kilku tych stacj
-        // 3. Porówywanie nazw czy znajduje się w nich wpisana nazwa
-
         for (GasStation gasStation : stationListFromCity) {
+            /* Search for station that contains name
+            *
+            * TODO: when AutoComplete text boxes will be updated (they will be filled dynamically
+            *  cointains() should be replaced with equals()
+            */
             if(gasStation.getName().contains(name)){
                 this.setID(gasStation.getID());
                 this.setName(gasStation.getName());
@@ -45,11 +46,6 @@ public class YourGasStation extends GasStation {
             }
         }
         Toast.makeText(context, "There's no such station found", Toast.LENGTH_SHORT).show();
-    /*4. Zebranie danych stacji spelniajacej kryteria
-            4b. Stwierdzenie ze nie da sie takich naleźć
-        5. Podstawienie danych do pól stacji.
-
-        */
     }
 
     public int getID_your_station() {
