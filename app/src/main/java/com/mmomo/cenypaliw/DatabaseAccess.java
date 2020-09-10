@@ -193,6 +193,6 @@ public class DatabaseAccess {
         Log.i("Attempt", values.getAsString("Name") + " " + lat + " " + lng);
         db.insert(GAS_STATIONS_COORD_TABLE, null, values);
         //db.execSQL("INSERT INTO Coordinates (ID_station,Name, Latitude, Longitude) VALUES ("+id+", '"+name+"', "+lat+", "+lng+");");
-        closeConnection();
+        //closeConnection();
     }
 }
