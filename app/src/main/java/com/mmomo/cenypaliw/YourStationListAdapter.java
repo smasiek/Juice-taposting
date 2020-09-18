@@ -19,6 +19,7 @@ import java.util.List;
 public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
     //Adapter creating rows in Your Station List
 
+
     public static YourStationListAdapterHandler adapterHandler;
 
     public YourStationListAdapter(Context context, List<YourGasStation> stations) {
@@ -44,8 +45,7 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
         ImageButton stationDeleteButton = convertView.findViewById(R.id.stationDeleteButton);
 
         stationDeleteButton.setOnClickListener(new View.OnClickListener() {
-
-
+            //Remove selected station from YourStations list
             @Override
             public void onClick(View view) {
                 YourStationDatabase yourStationDatabase=new YourStationDatabase(getContext());
@@ -89,9 +89,7 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
         stationCity.setText(station.getCity());
 
         if (station.getName() != null) {
-
             MapsActivity.setStationNameImage(station.getName(), stationImage, stationName);
-
         } else {
             stationName.setText("Station name error");
         }
@@ -101,6 +99,7 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
 
     public abstract static class YourStationListAdapterHandler
     {
+        //Allow connection with Activity
         public void deleteRow() {}
     }
 

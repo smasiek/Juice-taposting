@@ -47,6 +47,7 @@ public class AddYourStationActivity extends AppCompatActivity {
         nameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
+                //On textView click list of available stations are updated
                 names[0] = databaseAccess.getStationsArrayList(cityText.getText().toString());
                 ArrayAdapter<String> adapterName = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, names[0]);
                 nameText.setAdapter(adapterName);
@@ -61,9 +62,11 @@ public class AddYourStationActivity extends AppCompatActivity {
         streetText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
+                //On textView click list of streets are updated
                 streets[0] = databaseAccess.getStreetsArrayList(cityText.getText().toString(), nameText.getText().toString());
                 ArrayAdapter<String> adapterStreet = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, streets[0]);
                 streetText.setAdapter(adapterStreet);
+                //Show available streets without typing any letter
                 streetText.showDropDown();
             }
         });

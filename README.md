@@ -84,4 +84,17 @@ YourStationList
     + Solutions:
         + ??
 24. AddYourStation activity update - street text field, intelligent auto complete
-        
+    + Problems:
+        + Updating final array of strings from inner class method( onFocusChange) to show
+        accurate names/streets from the city
+    + Solutions:
+        + Using 1-item final array names[0] due to that holds another array and setting adapter
+        inside of the function
+25. Delete from YourStationsList button
+    + Problems:
+        + Accessing YourStationListActivity from inner class method( onClickListener)
+    + Solutions:
+        + Abstract Handler class for adapter. There is instance of handler class that defines 
+        deleteRow method using actual Activity object and methods. There is field of the 
+        Handler in Adapter class that allows us to call this method. THIS IS THE RIGHT WAY OF
+        CONNECTING ADAPTER TO ACTIVITY. Otherwise there might be some memory leaks.

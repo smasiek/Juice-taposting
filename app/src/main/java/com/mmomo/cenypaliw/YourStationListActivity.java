@@ -54,7 +54,8 @@ public class YourStationListActivity extends AppCompatActivity {
             Toast.makeText(this, "Station list is empty!\nAdd some stations to your list :)", Toast.LENGTH_SHORT).show();
         }
 
-        yourStationListAdapter.adapterHandler=new YourStationListAdapter.YourStationListAdapterHandler(){
+        YourStationListAdapter.adapterHandler =new YourStationListAdapter.YourStationListAdapterHandler(){
+            //Allow to refresh activity after ListView button click
             @Override
             public void deleteRow(){
                 finish();
@@ -63,7 +64,5 @@ public class YourStationListActivity extends AppCompatActivity {
                 overridePendingTransition(0, 0);
             }
         };
-
     }
-
 }

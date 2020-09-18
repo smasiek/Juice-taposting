@@ -49,6 +49,7 @@ public class DatabaseAccess {
     public List<GasStation> getStationList() {
         //Return complete list of stations from database
         List<GasStation> result = new ArrayList<>();
+        //Two tables opened simultaneously to receive basic data and coords
         String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
         String selectQueryLatLng = "SELECT * FROM " + GAS_STATIONS_COORD_TABLE;
         openConnection();
@@ -132,6 +133,7 @@ public class DatabaseAccess {
     public List<GasStation> getStationListFromCity(String city) {
         //Return list of stations from specific city
         List<GasStation> result = new ArrayList<>();
+        //Two tables opened simultaneously to receive basic data and coords
         String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
         String selectQueryLatLng = "SELECT * FROM " + GAS_STATIONS_COORD_TABLE;
         openConnection();
@@ -215,7 +217,6 @@ public class DatabaseAccess {
     public ArrayList<String> getCitiesArrayList() {
         ArrayList<String> result = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
-
         openConnection();
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -233,6 +234,7 @@ public class DatabaseAccess {
     }
 
     public ArrayList<String> getStationsArrayList(String city) {
+        //Returns stations from provided city
         ArrayList<String> result = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
 
@@ -241,6 +243,7 @@ public class DatabaseAccess {
 
         if (c.moveToFirst()) {
             do {
+                //Check if station is widely known/franchise like Orlen,LOTOS etc. and shorten its name
                 String tempName = GasStationNames.bigStationNameShortcut(c.getString(1));
                 if (c.getString(3).equals(city) && !result.contains(tempName)) {
                     result.add(tempName);

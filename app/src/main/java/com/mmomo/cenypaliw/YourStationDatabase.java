@@ -38,14 +38,6 @@ public class YourStationDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        /*String CREATE_STATIONS_TABLE= String.format("CREATE TABLE %s (%s INTEGER PRIMARY " +
-                "KEY AUTOINCREMENT UNIQUE NOT NULL, %s VARCHAR (250) NOT NULL," +
-                " %s VARCHAR (250), %s VARCHAR (250) NOT NULL, %s VARCHAR (250)," +
-                " %s VARCHAR (250), %s VARCHAR (250), %s DOUBLE (10, 2), %s DOUBLE (10, 2)," +
-                " %s DOUBLE (10, 2), %s DOUBLE (10, 2), %s DOUBLE (10, 2))",
-                TABLE_NAME, KEY_ID, KEY_NAME, KEY_STREET, KEY_CITY, KEY_POSTAL_CODE,
-                KEY_PROVINCE, KEY_COUNTY, KEY_RON95, KEY_RON98, KEY_ON, KEY_LPG, KEY_CNG);
-        db.execSQL(CREATE_STATIONS_TABLE);*/
         String CREATE_STATIONS_TABLE = "CREATE TABLE YourStations (" +
                 "    ID_your_station INTEGER        PRIMARY KEY AUTOINCREMENT" +
                 "                                   UNIQUE" +
@@ -115,27 +107,6 @@ public class YourStationDatabase extends SQLiteOpenHelper {
         List<YourGasStation> result = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getWritableDatabase();
-       /* String CREATE_STATIONS_TABLE= "CREATE TABLE YourStations (" +
-                "    ID_your_station INTEGER        PRIMARY KEY AUTOINCREMENT" +
-                "                                   UNIQUE" +
-                "                                   NOT NULL," +
-                "    ID_station      INTEGER        UNIQUE" +
-                "                                   NOT NULL" +
-                "                                   REFERENCES Stations (ID_station) ON DELETE CASCADE" +
-                "                                                                    ON UPDATE CASCADE," +
-                "    Name            VARCHAR (250)  NOT NULL," +
-                "    Street          VARCHAR (250)," +
-                "    City            VARCHAR (250)  NOT NULL," +
-                "    Postal_code     VARCHAR (250)," +
-                "    Province        VARCHAR (250)," +
-                "    County          VARCHAR (250)," +
-                "    RON95           DOUBLE (10, 2)," +
-                "    RON98           DOUBLE (10, 2)," +
-                "    [ON]            DOUBLE (10, 2)," +
-                "    LPG             DOUBLE (10, 2)," +
-                "    CNG             DOUBLE (10, 2) " +
-                ");";
-        db.execSQL(CREATE_STATIONS_TABLE);*/
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
