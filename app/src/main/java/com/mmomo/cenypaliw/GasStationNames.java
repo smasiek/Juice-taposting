@@ -11,4 +11,16 @@ public enum GasStationNames {
     public static int getPosition(GasStationNames name) {
         return name.i;
     }
+
+    public static String bigStationNameShortcut(String name){
+        if(name.contains("ORLEN")){
+            return "ORLEN";
+        }else if(name.contains("LOTOS")){
+            return "LOTOS";
+        } else if (name.contains("GROSAR")) {
+            return "GROSAR";
+        } else if (name.contains("BP")) {
+            return "BP";
+        }else return name;
+    }
 }

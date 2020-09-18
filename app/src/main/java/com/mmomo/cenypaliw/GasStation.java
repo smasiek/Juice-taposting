@@ -39,14 +39,6 @@ public class GasStation {
 
     }
 
-    public double getLat() {
-        return lat;
-    }
-
-    public double getLng() {
-        return lng;
-    }
-
     public GasStation(int ID, String name, String street,
                       String city, String postalCode, String province,
                       String county, double RON95, double RON98, double ON, double LPG, double CNG, double lat, double lng) {
@@ -160,6 +152,22 @@ public class GasStation {
 
     public void setCNG(double CNG) {
         this.CNG = CNG;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
 }

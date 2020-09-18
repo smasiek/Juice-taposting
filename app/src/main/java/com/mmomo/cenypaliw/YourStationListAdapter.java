@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +18,9 @@ import java.util.List;
 
 public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
     //Adapter creating rows in Your Station List
+
+    public static YourStationListAdapterHandler adapterHandler;
+
     public YourStationListAdapter(Context context, List<YourGasStation> stations) {
         super(context, 0, stations);
     }
@@ -24,7 +29,7 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        GasStation station = getItem(position);
+        final YourGasStation station = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.station_list_row, parent, false);
@@ -36,7 +41,21 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
         TextView stationStreet = convertView.findViewById(R.id.stationStreeTextView);
         TextView stationCity = convertView.findViewById(R.id.stationCityTextView);
         ImageView stationImage = convertView.findViewById(R.id.stationIconView);
+        ImageButton stationDeleteButton = convertView.findViewById(R.id.stationDeleteButton);
 
+        stationDeleteButton.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View view) {
+                YourStationDatabase yourStationDatabase=new YourStationDatabase(getContext());
+                yourStationDatabase.deleteYourStation(station);
+                if (YourStationListAdapter.adapterHandler != null) {
+                    YourStationListAdapter.adapterHandler.deleteRow();
+                }
+                Toast.makeText(getContext(), "Station deleted from your list", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         //TODO:If signing in already implemented add showing station prices using user preferences
 
@@ -78,6 +97,11 @@ public class YourStationListAdapter extends ArrayAdapter<YourGasStation> {
         }
 
         return convertView;
+    }
+
+    public abstract static class YourStationListAdapterHandler
+    {
+        public void deleteRow() {}
     }
 
 

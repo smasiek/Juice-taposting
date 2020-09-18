@@ -10,6 +10,7 @@
     <string name="name">Nazwa</string>
     <string name="blankText"></string>
     <string name="zapisz_stacje">Zapisz stacje</string>
+    <string name="select_street">Select street</string>
 
     <string-array name="cities">
         <item>Jasło</item>

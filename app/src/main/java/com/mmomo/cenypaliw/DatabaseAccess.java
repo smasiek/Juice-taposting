@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class DatabaseAccess {
@@ -56,7 +58,20 @@ public class DatabaseAccess {
         if (c1.moveToFirst() && c2.moveToFirst()) {
 
             do {
-                if (c1.getString(2) == null) {
+                if (c1.getString(2) == null && c1.getString(4) == null) {
+                    //Handle null Postal code and Street
+                    GasStation gasStation = new GasStation(Integer.parseInt(c1.getString(0)),
+                            c1.getString(1), c1.getString(3), c1.getString(3),
+                            " ", c1.getString(5), c1.getString(6),
+                            Double.parseDouble(c1.getString(7)),
+                            Double.parseDouble(c1.getString(8)),
+                            Double.parseDouble(c1.getString(9)),
+                            Double.parseDouble(c1.getString(10)),
+                            Double.parseDouble(c1.getString(11)),
+                            Double.parseDouble(c2.getString(2)),
+                            Double.parseDouble(c2.getString(3)));
+                    result.add(gasStation);
+                } else if (c1.getString(2) == null) {
                     //Handle null Street input when small town has none
                     GasStation gasStation = new GasStation(Integer.parseInt(c1.getString(0)),
                             c1.getString(1), c1.getString(3), c1.getString(3),
@@ -70,9 +85,9 @@ public class DatabaseAccess {
                             Double.parseDouble(c2.getString(3)));
                     result.add(gasStation);
                 } else if (c1.getString(4) == null) {
-                    //Handle null Postal code input when uknown
+                    //Handle null Postal code input
                     GasStation gasStation = new GasStation(Integer.parseInt(c1.getString(0)),
-                            c1.getString(1), c1.getString(3), c1.getString(3),
+                            c1.getString(1), c1.getString(2), c1.getString(3),
                             " ", c1.getString(5), c1.getString(6),
                             Double.parseDouble(c1.getString(7)),
                             Double.parseDouble(c1.getString(8)),
@@ -118,57 +133,138 @@ public class DatabaseAccess {
         //Return list of stations from specific city
         List<GasStation> result = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
-
+        String selectQueryLatLng = "SELECT * FROM " + GAS_STATIONS_COORD_TABLE;
         openConnection();
-        Cursor c = db.rawQuery(selectQuery, null);
-        if (c.moveToFirst()) {
+        Cursor c1 = db.rawQuery(selectQuery, null);
+        Cursor c2 = db.rawQuery(selectQueryLatLng, null);
+        if (c1.moveToFirst() && c2.moveToFirst()) {
             do {
-                if (c.getString(3).equals(city)) {
+                if (c1.getString(3).equals(city)) {
                     //First get stations from city then handle exceptional cases
-                    if (c.getString(2) == null) {
-                        //Handle null Street input when small town has none
-                        GasStation gasStation = new GasStation(Integer.parseInt(c.getString(0)),
-                                c.getString(1), c.getString(3), c.getString(3),
-                                c.getString(4), c.getString(5), c.getString(6),
-                                Double.parseDouble(c.getString(7)),
-                                Double.parseDouble(c.getString(8)),
-                                Double.parseDouble(c.getString(9)),
-                                Double.parseDouble(c.getString(10)),
-                                Double.parseDouble(c.getString(11)));
+                    if (c1.getString(2) == null && c1.getString(4) == null) {
+                        //Handle null Postal code and Street
+                        GasStation gasStation = new GasStation(Integer.parseInt(c1.getString(0)),
+                                c1.getString(1), c1.getString(3), c1.getString(3),
+                                " ", c1.getString(5), c1.getString(6),
+                                Double.parseDouble(c1.getString(7)),
+                                Double.parseDouble(c1.getString(8)),
+                                Double.parseDouble(c1.getString(9)),
+                                Double.parseDouble(c1.getString(10)),
+                                Double.parseDouble(c1.getString(11)),
+                                Double.parseDouble(c2.getString(2)),
+                                Double.parseDouble(c2.getString(3)));
                         result.add(gasStation);
-                    } else if (c.getString(4) == null) {
-                        //Handle null Postal code input when uknown
-                        GasStation gasStation = new GasStation(Integer.parseInt(c.getString(0)),
-                                c.getString(1), c.getString(3), c.getString(3),
-                                " ", c.getString(5), c.getString(6),
-                                Double.parseDouble(c.getString(7)),
-                                Double.parseDouble(c.getString(8)),
-                                Double.parseDouble(c.getString(9)),
-                                Double.parseDouble(c.getString(10)),
-                                Double.parseDouble(c.getString(11)));
+                    } else if (c1.getString(2) == null) {
+                        //Handle null Street input when small town has none
+                        GasStation gasStation = new GasStation(Integer.parseInt(c1.getString(0)),
+                                c1.getString(1), c1.getString(3), c1.getString(3),
+                                c1.getString(4), c1.getString(5), c1.getString(6),
+                                Double.parseDouble(c1.getString(7)),
+                                Double.parseDouble(c1.getString(8)),
+                                Double.parseDouble(c1.getString(9)),
+                                Double.parseDouble(c1.getString(10)),
+                                Double.parseDouble(c1.getString(11)),
+                                Double.parseDouble(c2.getString(2)),
+                                Double.parseDouble(c2.getString(3)));
+                        result.add(gasStation);
+                    } else if (c1.getString(4) == null) {
+                        //Handle null Postal code input
+                        GasStation gasStation = new GasStation(Integer.parseInt(c1.getString(0)),
+                                c1.getString(1), c1.getString(3), c1.getString(3),
+                                " ", c1.getString(5), c1.getString(6),
+                                Double.parseDouble(c1.getString(7)),
+                                Double.parseDouble(c1.getString(8)),
+                                Double.parseDouble(c1.getString(9)),
+                                Double.parseDouble(c1.getString(10)),
+                                Double.parseDouble(c1.getString(11)),
+                                Double.parseDouble(c2.getString(2)),
+                                Double.parseDouble(c2.getString(3)));
                         result.add(gasStation);
                     } else {
                         //Handle strings equal to "" caused by 0 in database table
                         //Size=5 because there are 5 types of petrol
                         Double[] petrol = new Double[5];
                         for (int j = 7; j < 12; j++) {
-                            if (c.getString(j).equals("")) {
+                            if (c1.getString(j).equals("")) {
                                 //Replace "" with 0.0
                                 petrol[j - 7] = 0.0;
                             } else {
                                 //Get actual value
-                                petrol[j - 7] = Double.parseDouble(c.getString(j));
+                                petrol[j - 7] = Double.parseDouble(c1.getString(j));
                             }
                         }
-                        GasStation gasStation = new GasStation(Integer.parseInt(c.getString(0)),
-                                c.getString(1), c.getString(2), c.getString(3),
-                                c.getString(4), c.getString(5), c.getString(6),
+                        GasStation gasStation = new GasStation(Integer.parseInt(c1.getString(0)),
+                                c1.getString(1), c1.getString(2), c1.getString(3),
+                                c1.getString(4), c1.getString(5), c1.getString(6),
                                 petrol[0],
                                 petrol[1],
                                 petrol[2],
                                 petrol[3],
-                                petrol[4]);
+                                petrol[4],
+                                Double.parseDouble(c2.getString(2)),
+                                Double.parseDouble(c2.getString(3)));
                         result.add(gasStation);
+                    }
+                }
+            } while (c1.moveToNext() && c2.moveToNext());
+        }
+        closeConnection();
+        return result;
+    }
+
+    public ArrayList<String> getCitiesArrayList() {
+        ArrayList<String> result = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
+
+        openConnection();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c.moveToFirst()) {
+            do {
+                if (c.getString(3) != null && !result.contains(c.getString(3))) {
+                    //Handle null Street input when small town has none
+                    result.add(c.getString(3));
+                }
+            } while (c.moveToNext());
+        }
+        closeConnection();
+        Collections.sort(result);
+        return result;
+    }
+
+    public ArrayList<String> getStationsArrayList(String city) {
+        ArrayList<String> result = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
+
+        openConnection();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c.moveToFirst()) {
+            do {
+                String tempName = GasStationNames.bigStationNameShortcut(c.getString(1));
+                if (c.getString(3).equals(city) && !result.contains(tempName)) {
+                    result.add(tempName);
+                }
+            } while (c.moveToNext());
+        }
+        closeConnection();
+        return result;
+    }
+
+
+    public ArrayList<String> getStreetsArrayList(String city, String name) {
+        ArrayList<String> result = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + GAS_STATIONS_TABLE;
+
+        openConnection();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c.moveToFirst()) {
+            do {
+                if (c.getString(3).equals(city) && c.getString(1).contains(name) && !result.contains(c.getString(2))) {
+                    if (c.getString(2) != null) {
+                        //Handle null Street input when small town has none
+                        result.add(c.getString(2));
                     }
                 }
             } while (c.moveToNext());

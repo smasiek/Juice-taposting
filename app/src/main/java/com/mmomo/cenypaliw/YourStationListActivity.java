@@ -44,8 +44,6 @@ public class YourStationListActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.stationListView);
 
-        //TODO: ZOBACZYC GDZIE SĄ PRZECHOWYWANE BAZY DANYCH
-
         stations = new YourStationDatabase(this).getYourStationList();
         YourStationListAdapter yourStationListAdapter = new YourStationListAdapter(this, stations);
 
@@ -55,6 +53,17 @@ public class YourStationListActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Station list is empty!\nAdd some stations to your list :)", Toast.LENGTH_SHORT).show();
         }
+
+        yourStationListAdapter.adapterHandler=new YourStationListAdapter.YourStationListAdapterHandler(){
+            @Override
+            public void deleteRow(){
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
+            }
+        };
+
     }
 
 }

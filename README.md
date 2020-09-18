@@ -10,7 +10,7 @@
 1. Utworzenie Main Acticity z mapą
 2. Utworzenie customowego toolbara
 3. Dodanie przycisku rozwijanego menu
-4. Basic, hardcoded Activity Station List i Add new Station
+4. Basic, hardcoded Activity Station List and Add new Station
 5. Hardcoded Activity Add Your Station
 6. Hardcoded Autocomplete Text Boxes in AddYourStation Activity
 7. Hardcoded Markers in Jaslo
@@ -83,3 +83,5 @@ YourStationList
         + While making table with lat lng Geocoder made some mistakes and some stations are misplaced
     + Solutions:
         + ??
+24. AddYourStation activity update - street text field, intelligent auto complete
+        

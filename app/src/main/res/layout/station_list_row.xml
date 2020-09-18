@@ -79,13 +79,13 @@
             android:layout_alignParentBottom="true">
 
             <ImageButton
-                android:id="@+id/imageButton4"
+                android:id="@+id/stationDeleteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/delete_your_station" />
 
             <ImageButton
-                android:id="@+id/imageButton3"
+                android:id="@+id/stationUpdatePriceButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:baselineAlignBottom="true"
